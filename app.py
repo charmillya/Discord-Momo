@@ -91,4 +91,4 @@ async def on_ready():
 
 # run
 
-bot.run(os.environ["DISCORD_TOKEN"])
+bot.run("MTMyNjU4Njk2MzYwMzYxOTk5NQ.GtRD0h.F09ZPTFA0MXy3g-S02F9_coreI0fPQcLexMDTo")

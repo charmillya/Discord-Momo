@@ -1,1 +1,0 @@
-worker: py app.py
