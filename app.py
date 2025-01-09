@@ -1,5 +1,6 @@
 import nextcord
 import sqlite3
+import os
 from nextcord.ext import commands
 intents = nextcord.Intents.default()
 intents.message_content = True
@@ -34,7 +35,7 @@ async def on_message(message):
     results = cur.fetchone()
 
     if results is None:
-        cur.execute(f'INSERT INTO users VALUES (?, ?, ?)', (user, 0, 0))
+        cur.execute(f'INSERT INTO users VALUES (?, ?, ?)', (user, 1, 0))
         cur.execute(f'SELECT exp, level FROM users WHERE userID = ?', (user,))
         results = cur.fetchone()
 
@@ -63,12 +64,13 @@ async def miralevel(inter: nextcord.Interaction):
     cur.execute(f'SELECT exp, level FROM users WHERE userID = ?', (str(inter.user.id),))
     results = cur.fetchone()
     if results is None:
-        cur.execute(f'INSERT INTO users VALUES (?, ?, ?)', ((str(inter.user.id), 0, 0)))
-        cur.execute(f'SELECT exp, level FROM users WHERE userID = ?', (str(inter.user.id),))
-        results = cur.fetchone()
+        cur.execute(f'INSERT INTO users VALUES (?, ?, ?)', ((str(inter.user.id), 1, 0)))
+        results = (1, 1)
     conn.commit()
     conn.close()
-    await inter.response.send_message(f'Your **Mira Level :sparkles: : {results[1]}** - **{neededExp - results[0]} exp remaining** until next level! <:nikki_wink:1326685739148116009>')
+    await inter.response.send_message(f'Your **Mira Level :sparkles: : {results[1]}** - Level :up: in **{neededExp - results[0]} exp**! <:nikki_wink:1326685739148116009>')
+
+# todo ajouter le total exp dans le message miralevel
 
 # commands
 
@@ -89,4 +91,4 @@ async def on_ready():
 
 # run
 
-bot.run("MTMyNjU4Njk2MzYwMzYxOTk5NQ.GtRD0h.F09ZPTFA0MXy3g-S02F9_coreI0fPQcLexMDTo")
+bot.run(os.environ["DISCORD_TOKEN"])
