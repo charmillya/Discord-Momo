@@ -12,6 +12,8 @@ bot = commands.Bot(command_prefix = "momo ", intents=intents) # instanciation de
 nikkisID = '1323383627492364319' # identifiant du serveur nikki's
 emoteNikkiWink = "<:nikki_wink:1326685739148116009>"
 emoteNikkiKiss = "<:nikki_kiss:1326589108361101405>"
+emoteMiraLevel = "<:mira_level:1327334099874087043>"
+emoteMiraExp = "<:mira_exp:1327333514831728720>"
 
 # levelling system
 
@@ -37,18 +39,18 @@ async def on_message(message):
     if new_xp == neededXp: #this is where you set the threshold for leveling up to the first level
         new_level = old_level+1
         new_xp = 0
-        await message.channel.send(f":up: Congrats {message.author.mention}, you gained a **Mira Level** :sparkles: and you are now Level **{new_level}**!")
+        await message.channel.send(f":up: Congrats {message.author.mention}, you gained a **Mira Level** {emoteMiraLevel} and you are now Level **{new_level}**!")
     else:
         new_level = old_level
     ###add more logic here for successive level-ups
-    cur.execute('UPDATE users SET xp = ?, totalXp = ?, level = ? WHERE userid = ?', (new_xp, perm_xp, new_level, user))
+    cur.execute('UPDATE users SET xp = ?, totalXp = ?, level = ? WHERE userid = ?', (new_xp, perm_xp, new_level, user,))
     conn.commit()
     conn.close()
     await bot.process_commands(message)
 
 @bot.slash_command( # check level and xp remaining
     name="miralevel",
-    description="Lets you know your Mira Level and remaining xp before levelling up!",
+    description="Lets you know your Mira Level and remaining Mira EXP before levelling up!",
 )   
 async def miralevel(
     inter: nextcord.Interaction, 
@@ -60,7 +62,7 @@ async def miralevel(
     user: nextcord.Member = nextcord.SlashOption(
         required=False,
         name="stylist",
-        description="View the Miralevel of a specified stylist!"
+        description="View the Mira Level of a specified stylist!"
     ),
     ):
     conn = sqlite3.connect('levels.db')
@@ -70,7 +72,7 @@ async def miralevel(
         cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(inter.user.id),))
         results = cur.fetchone()
         if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(inter.user.id), 1, 0, 0)))
+            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(inter.user.id), 1, 1, 1)))
             results = (1, 1, 1)
         conn.commit()
         conn.close()
@@ -78,20 +80,20 @@ async def miralevel(
         if(type == 1):
             miralevelEmbed = nextcord.Embed()
             miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-            miralevelEmbed.title = (f"Stylist {inter.user.name}'s Mira Level :sparkles:")
+            miralevelEmbed.title = (f"Stylist {inter.user.name}'s Mira Level {emoteMiraLevel}")
             miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
-            miralevelEmbed.add_field(name="Mira Level :sparkles:", value=str((results[2])))
-            miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} xp")
-            miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} xp")
+            miralevelEmbed.add_field(name="Mira Level", value=f'{str((results[2]))} {emoteMiraLevel}')
+            miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} EXP {emoteMiraExp}")
+            miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} EXP {emoteMiraExp}")
             await inter.response.send_message(embed = miralevelEmbed)
         else:
-            await inter.response.send_message(f'Your **Mira Level :sparkles: : {results[2]}** - Level :up: in **{neededXp - results[0]} xp**! Total : **{results[1]} xp** {emoteNikkiWink}')
+            await inter.response.send_message(f'Your **Mira Level {emoteMiraLevel} : {results[2]}** - Level :up: in **{neededXp - results[0]} EXP {emoteMiraExp}**! Total : **{results[1]} EXP** {emoteMiraExp} {emoteNikkiWink}')
 
     else:
         cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(user.id),))
         results = cur.fetchone()
         if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?)', ((str(user.id), 1, 1, 0)))
+            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(user.id), 1, 1, 1)))
             results = (1, 1, 1)
         conn.commit()
         conn.close()
@@ -99,14 +101,14 @@ async def miralevel(
         if(type == 1):
             miralevelEmbed = nextcord.Embed()
             miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-            miralevelEmbed.title = (f"Stylist {user.name}'s Mira Level :sparkles:")
+            miralevelEmbed.title = (f"Stylist {user.name}'s Mira Level {emoteMiraLevel}")
             miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
-            miralevelEmbed.add_field(name="Mira Level :sparkles:", value=str((results[2])))
-            miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} xp")
-            miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} xp")
+            miralevelEmbed.add_field(name="Mira Level", value=f'{str((results[2]))} {emoteMiraLevel}')
+            miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} EXP {emoteMiraExp}")
+            miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} EXP {emoteMiraExp}")
             await inter.response.send_message(embed = miralevelEmbed)
         else:
-            await inter.response.send_message(f"{user.name}'s **Mira Level :sparkles: : {results[2]}** - Level :up: in **{neededXp - results[0]} xp**! Total : **{results[1]} xp** {emoteNikkiWink}")
+            await inter.response.send_message(f"{user.name}'s **Mira Level {emoteMiraLevel} : {results[2]}** - Level :up: in **{neededXp - results[0]} EXP {emoteMiraExp}**! Total : **{results[1]} EXP {emoteMiraExp}** {emoteNikkiWink}")
 
 # commands
 
