@@ -22,17 +22,17 @@ async def on_message(message):
     user = message.author.id
     conn = sqlite3.connect('levels.db')
     cur = conn.cursor()
-    cur.execute(f'SELECT xp, level FROM users WHERE userID = ?', (user,))
+    cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ?', (user,))
     results = cur.fetchone()
 
     if results is None:
-        cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', (user, 1, 0, 0))
-        cur.execute(f'SELECT xp, level FROM users WHERE userID = ?', (user,))
+        cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', (user, 1, 1, 1))
+        cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ?', (user,))
         results = cur.fetchone()
 
     old_xp = results[0] ##the first item in the index, in this case, xp
-    old_level = results[1] ## the second item in the index, in this case, level
-    perm_xp = old_xp + 1
+    old_level = results[2] ## the second item in the index, in this case, level
+    perm_xp = results[1]+1
     new_xp = old_xp + 1
     if new_xp == neededXp: #this is where you set the threshold for leveling up to the first level
         new_level = old_level+1
@@ -70,7 +70,7 @@ async def miralevel(
         cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(inter.user.id),))
         results = cur.fetchone()
         if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?)', ((str(inter.user.id), 1, 1, 0)))
+            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(inter.user.id), 1, 0, 0)))
             results = (1, 1, 1)
         conn.commit()
         conn.close()
@@ -78,9 +78,9 @@ async def miralevel(
         if(type == 1):
             miralevelEmbed = nextcord.Embed()
             miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-            miralevelEmbed.title = (f"Stylist {inter.user.name}'s Miralevel :sparkles:")
+            miralevelEmbed.title = (f"Stylist {inter.user.name}'s Mira Level :sparkles:")
             miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
-            miralevelEmbed.add_field(name="Miralevel :sparkles:", value=str((results[2])))
+            miralevelEmbed.add_field(name="Mira Level :sparkles:", value=str((results[2])))
             miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} xp")
             miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} xp")
             await inter.response.send_message(embed = miralevelEmbed)
@@ -99,9 +99,9 @@ async def miralevel(
         if(type == 1):
             miralevelEmbed = nextcord.Embed()
             miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-            miralevelEmbed.title = (f"Stylist {user.name}'s Miralevel :sparkles:")
+            miralevelEmbed.title = (f"Stylist {user.name}'s Mira Level :sparkles:")
             miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
-            miralevelEmbed.add_field(name="Miralevel :sparkles:", value=str((results[2])))
+            miralevelEmbed.add_field(name="Mira Level :sparkles:", value=str((results[2])))
             miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} xp")
             miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} xp")
             await inter.response.send_message(embed = miralevelEmbed)
@@ -113,10 +113,6 @@ async def miralevel(
 @bot.command(name="online?")
 async def SendMessage(ctx):
     await ctx.send(f'Yes I am ! Momo v0.1 {emoteNikkiKiss}')
-
-@bot.command(name="specialmessage")
-async def SendMessage(ctx):
-    await ctx.send(f'''# hi @everyone !! {emoteNikkiWink} \nIt's me! Yours truly **Momo** !!\n*It appears that I've been summoned here..*\n## Well, while I'm at it, I will help you with the server's daily usage !\nCharmi is still testing weird things on me and adding me all sorts of "commands".. and it appears that I'm not really stable !! So if you encounter any problem with me, reach out to Charmi !!\n\n*I might sleep at times.. and not be available ! But in that case i'll try to wake up asap! Though you'll need to give me BBQ* {emoteNikkiWink}''')
 
 @bot.slash_command(
     name="online",
