@@ -68,47 +68,27 @@ async def miralevel(
     conn = sqlite3.connect('momodb.db')
     cur = conn.cursor()
 
-    if(not user):
-        cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(inter.user.id),))
-        results = cur.fetchone()
-        if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(inter.user.id), 1, 1, 1)))
-            results = (1, 1, 1)
-        conn.commit()
-        conn.close()
-        
-        if(type == 1):
-            miralevelEmbed = nextcord.Embed()
-            miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-            miralevelEmbed.title = (f"Stylist {inter.user.name}'s Mira Level {emoteMiraLevel}")
-            miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
-            miralevelEmbed.add_field(name="Mira Level", value=f'{str((results[2]))} {emoteMiraLevel}')
-            miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} EXP {emoteMiraExp}")
-            miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} EXP {emoteMiraExp}")
-            await inter.response.send_message(embed = miralevelEmbed)
-        else:
-            await inter.response.send_message(f'Your **Mira Level {emoteMiraLevel} : {results[2]}** - Level :up: in **{neededXp - results[0]} EXP {emoteMiraExp}**! Total : **{results[1]} EXP** {emoteMiraExp} {emoteNikkiWink}')
+    user = user or inter.user # si un user est spécifié, on le prend, sinon c'est l'auteur de l'interaction
 
-    else:
-        cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(user.id),))
-        results = cur.fetchone()
-        if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(user.id), 1, 1, 1)))
-            results = (1, 1, 1)
-        conn.commit()
-        conn.close()
+    cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(user.id),))
+    results = cur.fetchone()
+    if results is None:
+        cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(user.id), 1, 1, 1)))
+        results = (1, 1, 1)
+    conn.commit()
+    conn.close()
         
-        if(type == 1):
-            miralevelEmbed = nextcord.Embed()
-            miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-            miralevelEmbed.title = (f"Stylist {user.name}'s Mira Level {emoteMiraLevel}")
-            miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
-            miralevelEmbed.add_field(name="Mira Level", value=f'{str((results[2]))} {emoteMiraLevel}')
-            miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} EXP {emoteMiraExp}")
-            miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} EXP {emoteMiraExp}")
-            await inter.response.send_message(embed = miralevelEmbed)
-        else:
-            await inter.response.send_message(f"{user.name}'s **Mira Level {emoteMiraLevel} : {results[2]}** - Level :up: in **{neededXp - results[0]} EXP {emoteMiraExp}**! Total : **{results[1]} EXP {emoteMiraExp}** {emoteNikkiWink}")
+    if(type == 1):
+        miralevelEmbed = nextcord.Embed()
+        miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+        miralevelEmbed.title = (f"Stylist {user.name}'s Mira Level {emoteMiraLevel}")
+        miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
+        miralevelEmbed.add_field(name="Mira Level", value=f'{str((results[2]))} {emoteMiraLevel}')
+        miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} EXP {emoteMiraExp}")
+        miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} EXP {emoteMiraExp}")
+        await inter.response.send_message(embed = miralevelEmbed)
+    else:
+        await inter.response.send_message(f"{user.name}'s **Mira Level {emoteMiraLevel} : {results[2]}** - Total : **{results[1]} EXP {emoteMiraExp}** - Level :up: in **{neededXp - results[0]} EXP {emoteMiraExp}**! {emoteNikkiWink}")
 
 # daily outfit
 
@@ -121,28 +101,36 @@ async def daily(
     ):
     conn = sqlite3.connect('momodb.db')
     cur = conn.cursor()
-    cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM() LIMIT 1")
+    cur.execute("SELECT COUNT(clothname) FROM clothes")
     results = cur.fetchone()
-    selectedClothID = results[2]
-    obtainedUserID = results[4]
-    obtainedClothID = results[5]
-    while (obtainedUserID == inter.user.id and obtainedClothID == selectedClothID):
-        cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM() LIMIT 1")
+    nbClothes = results[0]
+    cur.execute("SELECT COUNT(userid) FROM obtained WHERE userid = ?", (inter.user.id,))
+    results = cur.fetchone()
+    if nbClothes > results[0]:
+        cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM()")
         results = cur.fetchone()
-        selectedClothID = results[2]
+        selectedClothID = results[1]
         obtainedUserID = results[4]
         obtainedClothID = results[5]
-    cur.execute("INSERT INTO obtained VALUES (?, ?)", (inter.user.id, selectedClothID,))
-    conn.commit()
-    conn.close()
-    dailyEmbed = nextcord.Embed()
-    dailyEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-    dailyEmbed.title = (f"Your daily piece of clothing !")
-    dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
-    dailyEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
-    dailyEmbed.add_field(name="Name", value=f"{str(results[2])}")
-    dailyEmbed.set_image(results[3])
-    await inter.response.send_message(dailyEmbed)
+        while (obtainedUserID == inter.user.id and obtainedClothID == selectedClothID):
+            cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM()")
+            results = cur.fetchone()
+            selectedClothID = results[1]
+            obtainedUserID = results[4]
+            obtainedClothID = results[5]
+        cur.execute("INSERT INTO obtained VALUES (?, ?)", (inter.user.id, selectedClothID,))
+        conn.commit()
+        conn.close()
+        dailyEmbed = nextcord.Embed()
+        dailyEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+        dailyEmbed.title = (f"Your daily piece of clothing!")
+        dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+        dailyEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
+        dailyEmbed.add_field(name="Name", value=f"{str(results[2])}")
+        dailyEmbed.set_image(results[3])
+        await inter.response.send_message(embed = dailyEmbed)
+    else:
+        await inter.response.send_message("You've already collected all pieces of clothing!")
 
 # commands
 
@@ -150,19 +138,31 @@ async def daily(
 async def SendMessage(ctx):
     await ctx.send(f'Yes I am ! Momo v0.1 {emoteNikkiKiss}')
 
-@bot.slash_command(
+@bot.slash_command( # online command
     name="online",
     description="Tests if I'm online!",
 )   
 async def online(inter: nextcord.Interaction) -> None:
     await inter.response.send_message(f'I am alive! {emoteNikkiKiss}')
 
-@bot.slash_command(
+@bot.slash_command( # echo command
     name="echo",
     description="I repeat what you say!",
 )  
 async def echo(interaction: nextcord.Interaction, arg: str):
     await interaction.response.send_message(f"You said: {arg}")
+
+@bot.slash_command( # bbq command
+    name="bbq",
+    description="Feed me some delicious BBQ!",
+)   
+async def bbq(inter: nextcord.Interaction):
+    bbqEmbed = nextcord.Embed()
+    bbqEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+    bbqEmbed.title = (f"BBQ fed!")
+    bbqEmbed.set_thumbnail("https://cdn-icons-png.flaticon.com/512/7601/7601433.png")
+    bbqEmbed.description = f'Thank you soooo much ehehe! *burp* {emoteNikkiWink}'
+    await inter.response.send_message(embed = bbqEmbed)
 
 # run
 
