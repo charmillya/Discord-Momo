@@ -22,7 +22,7 @@ neededXp = 50 # needed xp before levelling up
 @bot.event # level system
 async def on_message(message):
     user = message.author.id
-    conn = sqlite3.connect('levels.db')
+    conn = sqlite3.connect('momodb.db')
     cur = conn.cursor()
     cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ?', (user,))
     results = cur.fetchone()
@@ -65,7 +65,7 @@ async def miralevel(
         description="View the Mira Level of a specified stylist!"
     ),
     ):
-    conn = sqlite3.connect('levels.db')
+    conn = sqlite3.connect('momodb.db')
     cur = conn.cursor()
 
     if(not user):
@@ -109,6 +109,40 @@ async def miralevel(
             await inter.response.send_message(embed = miralevelEmbed)
         else:
             await inter.response.send_message(f"{user.name}'s **Mira Level {emoteMiraLevel} : {results[2]}** - Level :up: in **{neededXp - results[0]} EXP {emoteMiraExp}**! Total : **{results[1]} EXP {emoteMiraExp}** {emoteNikkiWink}")
+
+# daily outfit
+
+@bot.slash_command(
+    name="daily",
+    description="Claims your daily random piece of clothing!",
+)   
+async def daily(
+    inter: nextcord.Interaction
+    ):
+    conn = sqlite3.connect('momodb.db')
+    cur = conn.cursor()
+    cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM() LIMIT 1")
+    results = cur.fetchone()
+    selectedClothID = results[2]
+    obtainedUserID = results[4]
+    obtainedClothID = results[5]
+    while (obtainedUserID == inter.user.id and obtainedClothID == selectedClothID):
+        cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM() LIMIT 1")
+        results = cur.fetchone()
+        selectedClothID = results[2]
+        obtainedUserID = results[4]
+        obtainedClothID = results[5]
+    cur.execute("INSERT INTO obtained VALUES (?, ?)", (inter.user.id, selectedClothID,))
+    conn.commit()
+    conn.close()
+    dailyEmbed = nextcord.Embed()
+    dailyEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+    dailyEmbed.title = (f"Your daily piece of clothing !")
+    dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+    dailyEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
+    dailyEmbed.add_field(name="Name", value=f"{str(results[2])}")
+    dailyEmbed.set_image(results[3])
+    await inter.response.send_message(dailyEmbed)
 
 # commands
 
