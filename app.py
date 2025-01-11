@@ -1,6 +1,7 @@
 import nextcord
 import sqlite3
 from nextcord.ext import commands
+from datetime import datetime
 intents = nextcord.Intents.default()
 intents.message_content = True
 
@@ -15,7 +16,8 @@ emotes = {"emoteNikkiWink": "<:nikki_wink:1326685739148116009>",
            "emoteMiraLevel": "<:mira_level:1327334099874087043>", 
            "emoteMiraExp": "<:mira_exp:1327333514831728720>", 
            "emotePendants": "<:pendants:1327454772592246794>", 
-           "emoteWardrobe": "<:wardrobe:1327454758977536123>"}
+           "emoteWardrobe": "<:wardrobe:1327454758977536123>",
+           "emoteBling": "<:bling:1327712310973829231>"}
 
 # levelling system
 
@@ -30,7 +32,7 @@ async def on_message(message):
     results = cur.fetchone()
 
     if results is None:
-        cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', (user, 1, 1, 1))
+        cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)', (user, 1, 1, 1, 0, '2000-01-01',))
         cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ?', (user,))
         results = cur.fetchone()
 
@@ -41,7 +43,10 @@ async def on_message(message):
     if new_xp == neededXp: #this is where you set the threshold for leveling up to the first level
         new_level = old_level+1
         new_xp = 0
-        await message.channel.send(f":up: Congrats {message.author.mention}, you gained a **Mira Level** {emotes['emoteMiraLevel']} and you are now Level **{new_level}**!")
+        await message.channel.send(f":up: Congrats {message.author.mention}, you gained a **Mira Level** {emotes['emoteMiraLevel']}, **100 blings** {emotes["emoteBling"]} and you are now Level **{new_level}**!")
+        cur.execute("SELECT blings FROM users WHERE userid = ?", (message.author.id,))
+        userBalance = cur.fetchone()[0]
+        cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBalance+100, message.author.id,))
     else:
         new_level = old_level
     ###add more logic here for successive level-ups
@@ -75,7 +80,7 @@ async def miralevel(
     cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(user.id),))
     results = cur.fetchone()
     if results is None:
-        cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?)', ((str(user.id), 1, 1, 1)))
+        cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)', ((str(user.id), 1, 1, 1, 0, '2000-01-01',)))
         results = (1, 1, 1)
     conn.commit()
     conn.close()
@@ -103,39 +108,98 @@ async def daily(
     ):
     conn = sqlite3.connect('momodb.db')
     cur = conn.cursor()
+    cur.execute("SELECT lastdaily FROM users WHERE userid = ?", (inter.user.id,))
+    results = cur.fetchone()
+    lastDaily = results[0]
+    currDate = datetime.today().strftime('%Y-%m-%d')
+    if currDate != lastDaily:
+        cur.execute("SELECT COUNT(clothname) FROM clothes")
+        results = cur.fetchone()
+        nbClothes = results[0]
+        cur.execute("SELECT COUNT(userid) FROM obtained WHERE userid = ?", (inter.user.id,))
+        results = cur.fetchone()
+        if nbClothes > results[0]:
+            obtainedUserID = inter.user.id
+            while ((obtainedUserID == inter.user.id)):
+                cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) LEFT OUTER JOIN USERS ON (users.userid = obtained.userid) ORDER BY RANDOM() LIMIT 1")
+                results = cur.fetchone()
+                selectedClothID = results[1]
+                obtainedUserID = results[4]
+                if obtainedUserID != inter.user.id:
+                    cur.execute("SELECT * FROM obtained WHERE userid = ? and clothid = ?", (inter.user.id, selectedClothID,))
+                    results2 = cur.fetchone()
+                    if results2 == None:
+                        break
+                    else:
+                        obtainedUserID = inter.user.id
+            cur.execute("INSERT INTO obtained VALUES (?, ?)", (inter.user.id, selectedClothID,))
+            cur.execute("UPDATE users SET lastdaily = ? WHERE userid = ?", (currDate, inter.user.id,))
+            conn.commit()
+            conn.close()
+            dailyEmbed = nextcord.Embed()
+            dailyEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+            dailyEmbed.title = (f"Your daily free piece of clothing {emotes["emoteWardrobe"]}")
+            dailyEmbed.description = "The following piece of clothing has been added to your inventory!"
+            dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+            dailyEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
+            dailyEmbed.add_field(name="Name", value=f"{str(results[2])}")
+            dailyEmbed.set_image(results[3])
+            await inter.response.send_message(embed = dailyEmbed)
+        else:
+            await inter.response.send_message("You've already collected all pieces of clothing!")
+    else:
+        await inter.response.send_message(f'''You've **already obtained** your daily free piece of clothing! Come back **tomorrow**! {emotes["emoteNikkiWink"]}''')
+
+@bot.slash_command(
+    name="pull",
+    description="Buy a random piece of clothing you don't own for 50 blings!",
+)   
+async def pull(
+    inter: nextcord.Interaction
+    ):
+    conn = sqlite3.connect('momodb.db')
+    cur = conn.cursor()
     cur.execute("SELECT COUNT(clothname) FROM clothes")
     results = cur.fetchone()
     nbClothes = results[0]
     cur.execute("SELECT COUNT(userid) FROM obtained WHERE userid = ?", (inter.user.id,))
     results = cur.fetchone()
     if nbClothes > results[0]:
-        obtainedUserID = inter.user.id
-        while ((obtainedUserID == inter.user.id)):
-            cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) LEFT OUTER JOIN USERS ON (users.userid = obtained.userid) ORDER BY RANDOM() LIMIT 1")
-            results = cur.fetchone()
-            selectedClothID = results[1]
-            obtainedUserID = results[4]
-            if obtainedUserID != inter.user.id:
-                cur.execute("SELECT * FROM obtained WHERE userid = ? and clothid = ?", (inter.user.id, selectedClothID,))
-                results2 = cur.fetchone()
-                if results2 == None:
-                    break
-                else:
-                    obtainedUserID = inter.user.id
-        cur.execute("INSERT INTO obtained VALUES (?, ?)", (inter.user.id, selectedClothID,))
-        conn.commit()
-        conn.close()
-        dailyEmbed = nextcord.Embed()
-        dailyEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
-        dailyEmbed.title = (f"Your daily piece of clothing {emotes["emoteWardrobe"]}")
-        dailyEmbed.description = "The following piece of clothing has been added to your inventory!"
-        dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
-        dailyEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
-        dailyEmbed.add_field(name="Name", value=f"{str(results[2])}")
-        dailyEmbed.set_image(results[3])
-        await inter.response.send_message(embed = dailyEmbed)
+        cur.execute("SELECT blings FROM users WHERE userid = ?", (inter.user.id,))
+        results = cur.fetchone()
+        userBalance = results[0]
+        if userBalance - 50 >= 0:
+            obtainedUserID = inter.user.id
+            while ((obtainedUserID == inter.user.id)):
+                cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) LEFT OUTER JOIN USERS ON (users.userid = obtained.userid) ORDER BY RANDOM() LIMIT 1")
+                results = cur.fetchone()
+                selectedClothID = results[1]
+                obtainedUserID = results[4]
+                if obtainedUserID != inter.user.id:
+                    cur.execute("SELECT * FROM obtained WHERE userid = ? and clothid = ?", (inter.user.id, selectedClothID,))
+                    results2 = cur.fetchone()
+                    if results2 == None:
+                        break
+                    else:
+                        obtainedUserID = inter.user.id
+            cur.execute("INSERT INTO obtained VALUES (?, ?)", (inter.user.id, selectedClothID,))
+            cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBalance-50, inter.user.id,))
+            conn.commit()
+            conn.close()
+            dailyEmbed = nextcord.Embed()
+            dailyEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+            dailyEmbed.title = (f"Your obtained piece of clothing {emotes["emoteWardrobe"]}")
+            dailyEmbed.description = "The following piece of clothing has been added to your inventory!"
+            dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+            dailyEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
+            dailyEmbed.add_field(name="Name", value=f"{str(results[2])}")
+            dailyEmbed.set_image(results[3])
+            await inter.response.send_message(embed = dailyEmbed)
+        else:
+            await inter.response.send_message(f'''You don't own **enough blings** {emotes["emoteBling"]} ! Your current balance : **{userBalance}** {emotes["emoteBling"]}''')
     else:
         await inter.response.send_message("You've already collected all pieces of clothing!")
+
 
 @bot.slash_command(
     name="inventory",
@@ -143,6 +207,11 @@ async def daily(
 )   
 async def inventory(
     inter: nextcord.Interaction,
+    # type: int = nextcord.SlashOption(
+    #     name="imaged",
+    #     description="Displays your inventory clothes one by one!",
+    #     choices={"Yes please! :)": 1, "No thanks :(": 0},
+    # ),
     user: nextcord.Member = nextcord.SlashOption(
         required=False,
         name="stylist",
@@ -152,7 +221,7 @@ async def inventory(
     user = user or inter.user
     conn = sqlite3.connect('momodb.db')
     cur = conn.cursor()
-    cur.execute("SELECT clothes.clothname, outfits.outfitname FROM clothes LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) INNER JOIN obtained ON (clothes.clothid = obtained.clothid) WHERE userid = ? ORDER BY outfitname, clothname ASC", (inter.user.id,))
+    cur.execute("SELECT clothes.clothname, outfits.outfitname, clothes.clothimage FROM clothes LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) INNER JOIN obtained ON (clothes.clothid = obtained.clothid) WHERE userid = ? ORDER BY outfitname, clothname ASC", (user.id,))
     results = cur.fetchall()
     conn.commit()
     conn.close()
@@ -160,13 +229,50 @@ async def inventory(
     inventoryEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
     inventoryEmbed.title = (f"{user.name}'s inventory {emotes["emotePendants"]}")
     inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=20241222105801")
+    # if type == 0:
     if (results != []):
         for i in results:
             inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
     else:
         inventoryEmbed.description = "Your inventory is empty!"
     await inter.response.send_message(embed = inventoryEmbed)
-    
+    # else:
+    #     if (results != []):
+    #         for i in results:
+    #             inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
+    #             inventoryEmbed.set_image(i[2])
+    #     else:
+    #         inventoryEmbed.description = "Your inventory is empty!"
+    #     await inter.response.send_message(embed = inventoryEmbed)
+
+# economy
+
+@bot.slash_command(
+    name="blings",
+    description="Check your blings balance!",
+)   
+async def blings(
+    inter: nextcord.Interaction,
+    user: nextcord.Member = nextcord.SlashOption(
+        required=False,
+        name="stylist",
+        description="View the blings balance of a specified stylist!"
+    ),
+    ):
+    user = user or inter.user
+    conn = sqlite3.connect('momodb.db')
+    cur = conn.cursor()
+    cur.execute("SELECT blings FROM users WHERE userid = ?", (user.id,))
+    results = cur.fetchone()
+    conn.commit()
+    conn.close()
+    blingsEmbed = nextcord.Embed()
+    blingsEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+    blingsEmbed.title = (f"{user.name}'s blings balance {emotes["emoteBling"]}")
+    blingsEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/d/dd/Bling_Icon.png/revision/latest?cb=20241208230112")
+    blingsEmbed.add_field(name=f'Blings', value=f'{str(results[0])} {emotes["emoteBling"]}')
+    await inter.response.send_message(embed=blingsEmbed)
+
 # commands
 
 @bot.command(name="online?")
