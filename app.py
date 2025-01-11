@@ -109,17 +109,19 @@ async def daily(
     cur.execute("SELECT COUNT(userid) FROM obtained WHERE userid = ?", (inter.user.id,))
     results = cur.fetchone()
     if nbClothes > results[0]:
-        cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM()")
-        results = cur.fetchone()
-        selectedClothID = results[1]
-        obtainedUserID = results[4]
-        obtainedClothID = results[5]
-        while (obtainedUserID == inter.user.id and obtainedClothID == selectedClothID):
-            cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) ORDER BY RANDOM()")
+        obtainedUserID = inter.user.id
+        while ((obtainedUserID == inter.user.id)):
+            cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) LEFT OUTER JOIN USERS ON (users.userid = obtained.userid) ORDER BY RANDOM() LIMIT 1")
             results = cur.fetchone()
             selectedClothID = results[1]
             obtainedUserID = results[4]
-            obtainedClothID = results[5]
+            if obtainedUserID != inter.user.id:
+                cur.execute("SELECT * FROM obtained WHERE userid = ? and clothid = ?", (inter.user.id, selectedClothID,))
+                results2 = cur.fetchone()
+                if results2 == None:
+                    break
+                else:
+                    obtainedUserID = inter.user.id
         cur.execute("INSERT INTO obtained VALUES (?, ?)", (inter.user.id, selectedClothID,))
         conn.commit()
         conn.close()
@@ -158,8 +160,11 @@ async def inventory(
     inventoryEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
     inventoryEmbed.title = (f"{user.name}'s inventory {emotes["emotePendants"]}")
     inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=20241222105801")
-    for i in results:
-        inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
+    if (results != []):
+        for i in results:
+            inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
+    else:
+        inventoryEmbed.description = "Your inventory is empty!"
     await inter.response.send_message(embed = inventoryEmbed)
     
 # commands
