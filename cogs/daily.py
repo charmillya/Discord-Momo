@@ -12,7 +12,7 @@ class cDaily(commands.Cog):
 
     @nextcord.slash_command(
         name="daily",
-        description="Claims your daily random piece of clothing!",
+        description="Claim your daily random piece of clothing!",
     )           
     async def daily(
         self,
@@ -49,7 +49,12 @@ class cDaily(commands.Cog):
                 conn.commit()
                 conn.close()
                 dailyEmbed = nextcord.Embed()
-                dailyEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+                if results[6] == 3:
+                    dailyEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
+                elif results[6] == 4:
+                    dailyEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
+                else:
+                    dailyEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
                 dailyEmbed.title = (f"Your daily free piece of clothing {emotes["emoteWardrobe"]}")
                 dailyEmbed.description = "The following piece of clothing has been added to your inventory!"
                 dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")

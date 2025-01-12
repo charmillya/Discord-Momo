@@ -29,10 +29,10 @@ class cLvlEvent(commands.Cog):
         if new_xp == neededXp: #this is where you set the threshold for leveling up to the first level
             new_level = old_level+1
             new_xp = 0
-            await message.channel.send(f":up: Congrats {message.author.mention}, you gained a **Mira Level** {emotes['emoteMiraLevel']}, **100 blings** {emotes["emoteBling"]} and you are now Level **{new_level}**!")
+            await message.channel.send(f":up: Congrats {message.author.mention}, you gained a **Mira Level** {emotes['emoteMiraLevel']}, **10,000 blings** {emotes["emoteBling"]} and you are now Level **{new_level}**!")
             cur.execute("SELECT blings FROM users WHERE userid = ?", (message.author.id,))
             userBalance = cur.fetchone()[0]
-            cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBalance+100, message.author.id,))
+            cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBalance+10000, message.author.id,))
         else:
             new_level = old_level
         ###add more logic here for successive level-ups

@@ -11,7 +11,7 @@ class cMiraLevel(commands.Cog):
 
     @nextcord.slash_command(
         name="miralevel",
-        description="Lets you know your Mira Level and remaining Mira EXP before levelling up!",
+        description="Let you know your Mira Level and remaining Mira EXP before levelling up!",
     )   
     async def miralevel(
         self,
@@ -42,7 +42,7 @@ class cMiraLevel(commands.Cog):
             
         if(type == 1):
             miralevelEmbed = nextcord.Embed()
-            miralevelEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+            miralevelEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
             miralevelEmbed.title = (f"Stylist {user.name}'s Mira Level {emotes['emoteMiraLevel']}")
             miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
             miralevelEmbed.add_field(name="Mira Level", value=f'{str((results[2]))} {emotes["emoteMiraLevel"]}')

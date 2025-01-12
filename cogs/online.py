@@ -9,7 +9,7 @@ class cOnline(commands.Cog):
 
     @nextcord.slash_command(
         name="online",
-        description="Tests if I'm online!",
+        description="Test if I'm online!",
     )   
     async def online(self, inter: nextcord.Interaction) -> None:
         await inter.response.send_message(f'I am alive! {emotes["emoteNikkiKiss"]}')

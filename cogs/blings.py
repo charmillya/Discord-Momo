@@ -29,7 +29,7 @@ class cBlings(commands.Cog):
         conn.commit()
         conn.close()
         blingsEmbed = nextcord.Embed()
-        blingsEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+        blingsEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
         blingsEmbed.title = (f"{user.name}'s blings balance {emotes["emoteBling"]}")
         blingsEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/d/dd/Bling_Icon.png/revision/latest?cb=20241208230112")
         blingsEmbed.add_field(name=f'Blings', value=f'{str(results[0])} {emotes["emoteBling"]}')

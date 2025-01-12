@@ -13,7 +13,7 @@ class cBbq(commands.Cog):
     )   
     async def bbq(self, inter: nextcord.Interaction):
         bbqEmbed = nextcord.Embed()
-        bbqEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+        bbqEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
         bbqEmbed.title = (f"BBQ fed!")
         bbqEmbed.set_thumbnail("https://cdn-icons-png.flaticon.com/512/7601/7601433.png")
         bbqEmbed.description = f'Thank you soooo much ehehe! *burp* {emotes["emoteNikkiWink"]}'

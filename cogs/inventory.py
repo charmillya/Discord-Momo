@@ -11,7 +11,7 @@ class cInventory(commands.Cog):
 
     @nextcord.slash_command(
         name="inventory",
-        description="Checks your inventory!",
+        description="Check your inventory!",
     )   
     async def inventory(
         self,
@@ -35,7 +35,7 @@ class cInventory(commands.Cog):
         conn.commit()
         conn.close()
         inventoryEmbed = nextcord.Embed()
-        inventoryEmbed.colour = nextcord.colour.Color.from_rgb(153, 139, 46)
+        inventoryEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
         inventoryEmbed.title = (f"{user.name}'s inventory {emotes["emotePendants"]}")
         inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=20241222105801")
         # if type == 0:

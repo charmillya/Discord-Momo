@@ -5,4 +5,5 @@ emotes = {"emoteNikkiWink": "<:nikki_wink:1326685739148116009>",
            "emotePendants": "<:pendants:1327454772592246794>", 
            "emoteWardrobe": "<:wardrobe:1327454758977536123>",
            "emoteBling": "<:bling:1327712310973829231>",
-           "emoteStar": "<:star:1327778471115493439>",}
+           "emoteStar": "<:star:1327778471115493439>",
+           "emoteNikkiCry": "<:nikki_cry:1328086407163674674>"}
