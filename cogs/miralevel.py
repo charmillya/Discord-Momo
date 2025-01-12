@@ -46,7 +46,7 @@ class cMiraLevel(commands.Cog):
             miralevelEmbed.title = (f"Stylist {user.name}'s Mira Level {emotes['emoteMiraLevel']}")
             miralevelEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/0/07/Mira_Level_Icon.png/revision/latest?cb=20241230202652")
             miralevelEmbed.add_field(name="Mira Level", value=f'{str((results[2]))} {emotes["emoteMiraLevel"]}')
-            miralevelEmbed.add_field(name="Total", value=f"{str(results[1])} EXP {emotes['emoteMiraExp']}")
+            miralevelEmbed.add_field(name="Total Mira EXP", value=f"{str(results[1])} EXP {emotes['emoteMiraExp']}")
             miralevelEmbed.add_field(name="Level :up: in", value=f"{str((neededXp - results[0]))} EXP {emotes['emoteMiraExp']}")
             await inter.response.send_message(embed = miralevelEmbed)
         else:
