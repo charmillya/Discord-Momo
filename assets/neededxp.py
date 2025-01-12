@@ -1,0 +1,1 @@
+neededXp = 50 # needed xp before levelling up

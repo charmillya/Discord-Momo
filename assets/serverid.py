@@ -1,0 +1,1 @@
+nikkisID = 1323383627492364319 # identifiant du serveur nikki's
