@@ -46,7 +46,7 @@ class cSell(commands.Cog):
                 conn.close()
                 sellEmbed = nextcord.Embed()
                 sellEmbed.title = (f"Piece of clothing sold! {emotes["emoteNikkiKiss"]}")
-                sellEmbed.description = f'You sold the following piece of clothing :'
+                sellEmbed.description = f'You sold the following piece of clothing:'
                 if outfitrarity == 3:
                     sellEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
                 elif outfitrarity == 4:

@@ -5,7 +5,7 @@ from assets.momoemotes import emotes
 intents = nextcord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix = "momo ", intents=intents) # instanciation de l'objet bot
+bot = commands.Bot(command_prefix = "!momo ", intents=intents) # instanciation de l'objet bot
 
 cmds = []
 

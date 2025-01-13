@@ -39,9 +39,14 @@ class cInventory(commands.Cog):
         inventoryEmbed.title = (f"{user.name}'s inventory {emotes["emotePendants"]}")
         inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=20241222105801")
         # if type == 0:
+        counter = 0
         if (results != []):
             for i in results:
-                inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
+                counter += 1
+                if counter % 25 != 0:
+                    inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
+                else:
+                    inter.channel.send(embed=inventoryEmbed)
         else:
             inventoryEmbed.description = "Your inventory is empty!"
         await inter.response.send_message(embed = inventoryEmbed)

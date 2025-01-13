@@ -53,7 +53,7 @@ class cPull(commands.Cog):
                 else:
                     pullEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
                 pullEmbed.title = (f"Your obtained piece of clothing {emotes["emoteWardrobe"]}")
-                pullEmbed.description = "The following piece of clothing has been added to your inventory!"
+                pullEmbed.description = "The following piece of clothing has been added to your inventory:"
                 pullEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
                 pullEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
                 pullEmbed.add_field(name="Name", value=f"{str(results[2])}")

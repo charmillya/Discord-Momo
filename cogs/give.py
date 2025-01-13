@@ -39,25 +39,32 @@ class cGive(commands.Cog):
                 clothimage = results[2]
                 outfitname = results[3]
                 outfitrarity = results[4]
-                cur.execute("INSERT INTO obtained VALUES (?, ?)", (user.id, clothid,))
-                cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
-                conn.commit()
-                conn.close()
-                giveEmbed = nextcord.Embed()
-                if outfitrarity == 3:
-                    giveEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
-                elif outfitrarity == 4:
-                    giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
+                cur.execute("SELECT * FROM obtained WHERE userid = ? AND clothid = ?", (user.id, clothid,))
+                results = cur.fetchone()
+                if results is None:
+                    cur.execute("INSERT INTO obtained VALUES (?, ?)", (user.id, clothid,))
+                    cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
+                    conn.commit()
+                    conn.close()
+                    giveEmbed = nextcord.Embed()
+                    if outfitrarity == 3:
+                        giveEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
+                    elif outfitrarity == 4:
+                        giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
+                    else:
+                        giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
+                    giveEmbed.title = (f"Piece of clothing given! {emotes["emoteNikkiKiss"]}")
+                    giveEmbed.description = f'{user.mention}, {inter.user.mention} gave you the following piece of clothing:'
+                    giveEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+                    giveEmbed.add_field(name="Outfit", value=f'{outfitname}')
+                    giveEmbed.add_field(name="Name", value=f"{clothname}")
+                    giveEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
+                    giveEmbed.set_image(clothimage)
+                    await inter.response.send_message(embed = giveEmbed)
                 else:
-                    giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
-                giveEmbed.title = (f"Piece of clothing given! {emotes["emoteNikkiKiss"]}")
-                giveEmbed.description = f'{user.mention}, {inter.user.mention} gave you the following piece of clothing :'
-                giveEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
-                giveEmbed.add_field(name="Outfit", value=f'{outfitname}')
-                giveEmbed.add_field(name="Name", value=f"{clothname}")
-                giveEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
-                giveEmbed.set_image(clothimage)
-                await inter.response.send_message(embed = giveEmbed)
+                    conn.commit()
+                    conn.close()
+                    await inter.response.send_message(f'The stylist you want to give that piece of clothing to **already owns it**! {emotes["emoteNikkiCry"]}')
         
 def setup(bot: commands.Bot):
     bot.add_cog(cGive(bot))

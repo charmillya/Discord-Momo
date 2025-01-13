@@ -56,7 +56,7 @@ class cDaily(commands.Cog):
                 else:
                     dailyEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
                 dailyEmbed.title = (f"Your daily free piece of clothing {emotes["emoteWardrobe"]}")
-                dailyEmbed.description = "The following piece of clothing has been added to your inventory!"
+                dailyEmbed.description = "The following piece of clothing has been added to your inventory:"
                 dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
                 dailyEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
                 dailyEmbed.add_field(name="Name", value=f"{str(results[2])}")
