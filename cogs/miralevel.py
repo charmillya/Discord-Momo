@@ -35,7 +35,7 @@ class cMiraLevel(commands.Cog):
         cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(user.id),))
         results = cur.fetchone()
         if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)', ((str(user.id), 1, 1, 1, 0, '2000-01-01',)))
+            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)', ((str(user.id), 1, 1, 1, 0, '2000-01-01', '2000-01-01')))
             results = (1, 1, 1)
         conn.commit()
         conn.close()

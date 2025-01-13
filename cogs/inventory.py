@@ -46,7 +46,11 @@ class cInventory(commands.Cog):
                 if counter % 25 != 0:
                     inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
                 else:
-                    inter.channel.send(embed=inventoryEmbed)
+                    await inter.channel.send(embed=inventoryEmbed)
+                    inventoryEmbed = nextcord.Embed()
+                    inventoryEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
+                    inventoryEmbed.title = (f"{user.name}'s inventory {emotes["emotePendants"]}")
+                    inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=20241222105801")
         else:
             inventoryEmbed.description = "Your inventory is empty!"
         await inter.response.send_message(embed = inventoryEmbed)

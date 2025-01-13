@@ -30,10 +30,11 @@ class cPull(commands.Cog):
             if userBalance - 5000 >= 0:
                 obtainedUserID = inter.user.id
                 while ((obtainedUserID == inter.user.id)):
-                    cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid, outfits.outfitrarity FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) LEFT OUTER JOIN USERS ON (users.userid = obtained.userid) ORDER BY RANDOM() LIMIT 1")
+                    cur.execute("SELECT outfits.outfitname, clothes.clothid, clothes.clothname, clothes.clothimage, obtained.userid, obtained.clothid, outfits.outfitrarity, user.blings FROM clothes INNER JOIN outfits ON (outfits.outfitid = clothes.outfitid) LEFT OUTER JOIN obtained ON (obtained.clothid = clothes.clothid) LEFT OUTER JOIN USERS ON (users.userid = obtained.userid) ORDER BY RANDOM() LIMIT 1")
                     results = cur.fetchone()
                     selectedClothID = results[1]
                     obtainedUserID = results[4]
+                    userBlings = results[7]
                     if obtainedUserID != inter.user.id:
                         cur.execute("SELECT * FROM obtained WHERE userid = ? and clothid = ?", (inter.user.id, selectedClothID,))
                         results2 = cur.fetchone()
@@ -58,6 +59,7 @@ class cPull(commands.Cog):
                 pullEmbed.add_field(name="Outfit", value=f'{str((results[0]))}')
                 pullEmbed.add_field(name="Name", value=f"{str(results[2])}")
                 pullEmbed.add_field(name="Rarity", value=f"{str(results[6])}  {emotes['emoteStar']}")
+                pullEmbed.add_field(name="New balance", value=f"{str(results[7])} {emotes['emoteBling']}")
                 pullEmbed.set_image(results[3])
                 await inter.response.send_message(embed = pullEmbed)
             else:
