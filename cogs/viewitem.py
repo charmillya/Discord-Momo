@@ -4,16 +4,16 @@ from nextcord.ext import commands
 from assets.momoemotes import emotes
 from assets.neededxp import neededXp
 
-class cView(commands.Cog):
+class cViewItem(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
     @nextcord.slash_command(
-        name="view",
+        name="viewitem",
         description="Display information about a specified piece of clothing!",
     )   
-    async def view(
+    async def viewitem(
         self,
         inter: nextcord.Interaction,
         item: str = nextcord.SlashOption(
@@ -57,4 +57,4 @@ class cView(commands.Cog):
 
         
 def setup(bot: commands.Bot):
-    bot.add_cog(cView(bot))
+    bot.add_cog(cViewItem(bot))
