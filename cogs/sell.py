@@ -1,6 +1,8 @@
 import nextcord
 import sqlite3
+from nextcord import File, ButtonStyle, Embed, Color
 from nextcord.ext import commands
+from nextcord.ui import Button, View
 from assets.momoemotes import emotes
 
 class cSell(commands.Cog):
@@ -32,21 +34,60 @@ class cSell(commands.Cog):
                 clothimage = results[2]
                 outfitname = results[3]
                 outfitrarity = results[4]
-                cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
-                cur.execute("SELECT blings FROM users WHERE userid = ?", (inter.user.id,))
-                results = cur.fetchone()
-                userBlings = results[0]
-                if outfitrarity == 3:
-                    cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+3500, inter.user.id,))
-                elif outfitrarity == 4:
-                    cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+7500, inter.user.id,))
-                else:
-                    cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+10000, inter.user.id,))
-                conn.commit()
-                conn.close()
+
+                async def yes_callback(interaction):
+                    nonlocal sent_msg
+                    noButton.disabled = True
+                    yesButton.disabled = True
+                    cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
+                    cur.execute("SELECT blings FROM users WHERE userid = ?", (inter.user.id,))
+                    results = cur.fetchone()
+                    userBlings = results[0]
+                    if outfitrarity == 3:
+                        cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+1500, inter.user.id,))
+                    elif outfitrarity == 4:
+                        cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+3500, inter.user.id,))
+                    else:
+                        cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+5000, inter.user.id,))
+                    conn.commit()
+                    conn.close()
+                    sellEmbed = nextcord.Embed()
+                    sellEmbed.title = (f"Piece of clothing sold! {emotes["emoteNikkiKiss"]}")
+                    sellEmbed.description = f'You sold the following piece of clothing:'
+                    if outfitrarity == 3:
+                        sellEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
+                    elif outfitrarity == 4:
+                        sellEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
+                    else:
+                        sellEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
+                    sellEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+                    sellEmbed.add_field(name="Outfit", value=f'{outfitname}')
+                    sellEmbed.add_field(name="Name", value=f"{clothname}")
+                    sellEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
+                    sellEmbed.add_field(name="Old balance", value=f"{userBlings} {emotes["emoteBling"]}")
+                    if outfitrarity == 3:
+                        sellEmbed.add_field(name="New balance", value=f"{userBlings+1500} {emotes["emoteBling"]}")
+                    elif outfitrarity == 4:
+                        sellEmbed.add_field(name="New balance", value=f"{userBlings+3500} {emotes["emoteBling"]}")
+                    else:
+                        sellEmbed.add_field(name="New balance", value=f"{userBlings+5000} {emotes["emoteBling"]}")
+                    sellEmbed.set_image(clothimage)
+                    await inter.edit_original_message(embed=sellEmbed, view=myview)
+
+                async def no_callback(interaction):
+                    nonlocal sent_msg
+                    noButton.disabled = True
+                    yesButton.disabled = True
+                    cancelledEmbed = nextcord.Embed()
+                    cancelledEmbed.title = (f"Cancelled successfully! {emotes["emoteNikkiWink"]}")
+                    cancelledEmbed.description = f'No worries, you kept your item!'
+                    cancelledEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
+                    cancelledEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+                    await inter.edit_original_message(embed=cancelledEmbed, view=myview)
+
                 sellEmbed = nextcord.Embed()
-                sellEmbed.title = (f"Piece of clothing sold! {emotes["emoteNikkiKiss"]}")
-                sellEmbed.description = f'You sold the following piece of clothing:'
+                sellEmbed.title = (f"Selling confirmation :bangbang:")
+                sellEmbed.description = f'Are you sure that you want to sell the following piece of clothing ?'
                 if outfitrarity == 3:
                     sellEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
                 elif outfitrarity == 4:
@@ -57,15 +98,14 @@ class cSell(commands.Cog):
                 sellEmbed.add_field(name="Outfit", value=f'{outfitname}')
                 sellEmbed.add_field(name="Name", value=f"{clothname}")
                 sellEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
-                sellEmbed.add_field(name="Old balance", value=f"{userBlings} {emotes["emoteBling"]}")
-                if outfitrarity == 3:
-                    sellEmbed.add_field(name="New balance", value=f"{userBlings+3500} {emotes["emoteBling"]}")
-                elif outfitrarity == 4:
-                    sellEmbed.add_field(name="New balance", value=f"{userBlings+7500} {emotes["emoteBling"]}")
-                else:
-                    sellEmbed.add_field(name="New balance", value=f"{userBlings+10000} {emotes["emoteBling"]}")
-                sellEmbed.set_image(clothimage)
-                await inter.response.send_message(embed = sellEmbed)
+                yesButton = Button(label="Yes!", style=ButtonStyle.blurple)
+                yesButton.callback = yes_callback # next_callback : retour programme quand on appuie sur yes
+                noButton = Button(label="No..", style=ButtonStyle.blurple)
+                noButton.callback = no_callback # next_callback : retour programme quand on appuie sur yes
+                myview = View(timeout=180)
+                myview.add_item(yesButton)
+                myview.add_item(noButton)
+                sent_msg = await inter.response.send_message(embed=sellEmbed, view=myview)
         
 def setup(bot: commands.Bot):
     bot.add_cog(cSell(bot))
