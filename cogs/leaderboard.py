@@ -73,7 +73,7 @@ class cLeaderboard(commands.Cog):
         else:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
-            cur.execute("SELECT userid, level, totalxp, blings FROM users ORDER BY totalxp + blings DESC LIMIT 10")
+            cur.execute("SELECT userid, level, totalxp, blings FROM users ORDER BY totalxp * 100 + blings DESC LIMIT 10")
             results = cur.fetchall()
             conn.commit()
             conn.close()

@@ -10,7 +10,7 @@ class cPull(commands.Cog):
 
     @nextcord.slash_command(
         name="pull",
-        description="Buy a random piece of clothing you don't own for 5,000 blings!",
+        description="Buy a random piece of clothing you don't own for 5,000 Blings!",
     )   
     async def pull(
         self,
@@ -64,7 +64,7 @@ class cPull(commands.Cog):
                 pullEmbed.add_field(name="New balance", value=f"{results[0]} {emotes['emoteBling']}")
                 await inter.response.send_message(embed = pullEmbed)
             else:
-                await inter.response.send_message(f'''You don't have **enough blings** {emotes["emoteBling"]} ! Your current balance : **{userBalance}** {emotes["emoteBling"]}''')
+                await inter.response.send_message(f'''You don't have **enough Blings** {emotes["emoteBling"]} ! Your current balance : **{userBalance}** {emotes["emoteBling"]}''')
         else:
             await inter.response.send_message("You've already collected all pieces of clothing!")
 

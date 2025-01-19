@@ -1,6 +1,8 @@
 import nextcord
 import sqlite3
+from nextcord import File, ButtonStyle, Embed, Color
 from nextcord.ext import commands
+from nextcord.ui import Button, View
 from assets.momoemotes import emotes
 
 class cGive(commands.Cog):
@@ -39,32 +41,70 @@ class cGive(commands.Cog):
                 clothimage = results[2]
                 outfitname = results[3]
                 outfitrarity = results[4]
-                cur.execute("SELECT * FROM obtained WHERE userid = ? AND clothid = ?", (user.id, clothid,))
-                results = cur.fetchone()
-                if results is None:
-                    cur.execute("INSERT INTO obtained VALUES (?, ?)", (user.id, clothid,))
-                    cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
-                    conn.commit()
-                    conn.close()
-                    giveEmbed = nextcord.Embed()
-                    if outfitrarity == 3:
-                        giveEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
-                    elif outfitrarity == 4:
-                        giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
+
+                async def no_callback(interaction):
+                    nonlocal sent_msg
+                    noButton.disabled = True
+                    yesButton.disabled = True
+                    cancelledEmbed = nextcord.Embed()
+                    cancelledEmbed.title = (f"Cancelled successfully! {emotes["emoteNikkiWink"]}")
+                    cancelledEmbed.description = f'No worries, you kept your item!'
+                    cancelledEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
+                    cancelledEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+                    await inter.edit_original_message(embed=cancelledEmbed, view=myview)
+
+                async def yes_callback(interaction):
+                    nonlocal sent_msg
+                    noButton.disabled = True
+                    yesButton.disabled = True
+                    cur.execute("SELECT * FROM obtained WHERE userid = ? AND clothid = ?", (user.id, clothid,))
+                    results = cur.fetchone()
+                    if results is None:
+                        cur.execute("INSERT INTO obtained VALUES (?, ?)", (user.id, clothid,))
+                        cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
+                        conn.commit()
+                        conn.close()
+                        giveEmbed = nextcord.Embed()
+                        if outfitrarity == 3:
+                            giveEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
+                        elif outfitrarity == 4:
+                            giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
+                        else:
+                            giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
+                        giveEmbed.title = (f"Piece of clothing given! {emotes["emoteNikkiKiss"]}")
+                        giveEmbed.description = f'{user.mention}, {inter.user.mention} gave you the following piece of clothing:'
+                        giveEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+                        giveEmbed.add_field(name="Outfit", value=f'{outfitname}')
+                        giveEmbed.add_field(name="Name", value=f"{clothname}")
+                        giveEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
+                        giveEmbed.set_image(clothimage)
+                        await inter.edit_original_message(embed=giveEmbed, view=myview)
                     else:
-                        giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
-                    giveEmbed.title = (f"Piece of clothing given! {emotes["emoteNikkiKiss"]}")
-                    giveEmbed.description = f'{user.mention}, {inter.user.mention} gave you the following piece of clothing:'
-                    giveEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
-                    giveEmbed.add_field(name="Outfit", value=f'{outfitname}')
-                    giveEmbed.add_field(name="Name", value=f"{clothname}")
-                    giveEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
-                    giveEmbed.set_image(clothimage)
-                    await inter.response.send_message(embed = giveEmbed)
+                        conn.commit()
+                        conn.close()
+                        await inter.response.send_message(f'The stylist you want to give that piece of clothing to **already owns it**! {emotes["emoteNikkiCry"]}')
+
+                giveEmbed = nextcord.Embed()
+                giveEmbed.title = (f"Giving confirmation :bangbang:")
+                giveEmbed.description = f'Are you sure that you want to give the following piece of clothing ?'
+                if outfitrarity == 3:
+                    giveEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
+                elif outfitrarity == 4:
+                    giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
                 else:
-                    conn.commit()
-                    conn.close()
-                    await inter.response.send_message(f'The stylist you want to give that piece of clothing to **already owns it**! {emotes["emoteNikkiCry"]}')
+                    giveEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
+                giveEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+                giveEmbed.add_field(name="Outfit", value=f'{outfitname}')
+                giveEmbed.add_field(name="Name", value=f"{clothname}")
+                giveEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
+                yesButton = Button(label="Yes!", style=ButtonStyle.blurple)
+                yesButton.callback = yes_callback # next_callback : retour programme quand on appuie sur yes
+                noButton = Button(label="No..", style=ButtonStyle.blurple)
+                noButton.callback = no_callback # next_callback : retour programme quand on appuie sur yes
+                myview = View(timeout=180)
+                myview.add_item(yesButton)
+                myview.add_item(noButton)
+                sent_msg = await inter.response.send_message(embed = giveEmbed, view=myview)
         
 def setup(bot: commands.Bot):
     bot.add_cog(cGive(bot))

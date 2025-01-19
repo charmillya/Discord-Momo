@@ -62,11 +62,17 @@ class cInventory(commands.Cog):
                     async def previous_callback(interaction): # clic sur previous
                         nonlocal compteur
                         if compteur == nbItems:
-                            compteur = nbItems-(nbItems%10)-10
+                            if nbItems%10 == 0: # cas où le nombre d'items est un multiple de 10
+                                compteur = nbItems-20
+                            else:
+                                compteur = nbItems-(nbItems%10)-10
                         else:
                             compteur -= 20
                         if compteur < 0:
-                            compteur = nbItems-(nbItems%10)
+                            if nbItems%10 == 0: # cas où le nombre d'items est un multiple de 10
+                                compteur = nbItems-10
+                            else:
+                                compteur = nbItems-(nbItems%10)
                         inventoryEmbed.clear_fields()
                         for i in results[compteur:]:
                             compteur += 1

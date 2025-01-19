@@ -12,7 +12,7 @@ class cSell(commands.Cog):
 
     @nextcord.slash_command(
         name="sell",
-        description="Sell a piece of clothing of your choice to earn blings!",
+        description="Sell a piece of clothing of your choice to earn Blings!",
     )           
     async def give(
         self,

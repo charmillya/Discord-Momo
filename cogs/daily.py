@@ -12,7 +12,7 @@ class cDaily(commands.Cog):
 
     @nextcord.slash_command(
         name="daily",
-        description="Claim your daily random piece of clothing!",
+        description="Claim your daily random piece of clothing and Blings delivery!",
     )           
     async def daily(
         self,
@@ -86,7 +86,7 @@ class cDaily(commands.Cog):
                 dailyEmbed = nextcord.Embed()
                 dailyEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
                 dailyEmbed.title = (f"Your daily Blings delivery! {emotes["emoteBling"]}")
-                dailyEmbed.description = "Your Blings balance has been succesfully changed:"
+                dailyEmbed.description = "Your Blings balance has been succesfully incremented:"
                 dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/d/dd/Bling_Icon.png/revision/latest?cb=20241208230112")
                 dailyEmbed.add_field(name="Old balance", value=f'{userBlings}')
                 dailyEmbed.add_field(name="New balance", value=f"{userBlings+3000}")

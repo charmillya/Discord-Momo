@@ -17,7 +17,8 @@ class cWelcomeEvent(commands.Cog):
         welcomeEmbed.set_thumbnail("https://stickershop.line-scdn.net/stickershop/v1/product/28246239/LINEStorePC/main.png?v=1")
         welcomeEmbed.description = f'I am Momo, yours truly travel companion! I invite you to wander through our different discussion channels, there are so many nice stylists out there~ ! {emotes["emoteNikkiWink"]}'
         await member.add_roles(role)
-        await channel.send(welcomeEmbed)
+        await channel.send(embed=welcomeEmbed)
+        await channel.send("aaaaaaaaaa")
 
 def setup(bot: commands.Bot):
     bot.add_cog(cWelcomeEvent(bot))

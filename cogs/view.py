@@ -52,14 +52,14 @@ class cView(commands.Cog):
                 viewEmbed.add_field(name="Name", value=f"{clothname}")
                 viewEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
                 if outfitrarity == 3:
-                    viewEmbed.add_field(name="Value", value=f"3500 {emotes["emoteBling"]}")
+                    viewEmbed.add_field(name="Value", value=f"1500 {emotes["emoteBling"]}")
                 elif outfitrarity == 4:
-                    viewEmbed.add_field(name="Value", value=f"7500 {emotes["emoteBling"]}")
+                    viewEmbed.add_field(name="Value", value=f"3500 {emotes["emoteBling"]}")
                 else:
-                    viewEmbed.add_field(name="Value", value=f"10000 {emotes["emoteBling"]}")
+                    viewEmbed.add_field(name="Value", value=f"5000 {emotes["emoteBling"]}")
                 viewEmbed.set_image(clothimage)
                 await inter.response.send_message(embed = viewEmbed)
-        else:
+        else: # outfit view
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
             cur.execute("SELECT clothes.clothid, clothes.clothname, outfits.outfitname, outfits.outfitrarity, outfits.outfitimage FROM outfits INNER JOIN clothes ON (outfits.outfitid = clothes.outfitid) WHERE outfitname = ? ORDER BY clothes.clothname", (name,))
@@ -74,6 +74,8 @@ class cView(commands.Cog):
                 outfitimage = results[0][4]
                 conn.commit()
                 conn.close()
+
+                
                 viewEmbed = nextcord.Embed()
                 viewEmbed.title = (f"{outfitname} {emotes["emoteWardrobe"]}")
                 if outfitrarity == 3:
