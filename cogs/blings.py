@@ -24,7 +24,7 @@ class cBlings(commands.Cog):
         user = user or inter.user
         conn = sqlite3.connect('momodb.db')
         cur = conn.cursor()
-        cur.execute("SELECT blings FROM users WHERE userid = ?", (user.id,))
+        cur.execute("SELECT blings FROM users WHERE userid = ? AND guildid = ?", (user.id, inter.guild_id,))
         results = cur.fetchone()
         conn.commit()
         conn.close()

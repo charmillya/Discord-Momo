@@ -32,10 +32,10 @@ class cMiraLevel(commands.Cog):
 
         user = user or inter.user # si un user est spécifié, on le prend, sinon c'est l'auteur de l'interaction
 
-        cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ?', (str(user.id),))
+        cur.execute(f'SELECT xp, totalXp, level FROM users WHERE userID = ? AND guildid = ?', (str(user.id), inter.guild_id,))
         results = cur.fetchone()
         if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)', ((str(user.id), 1, 1, 1, 0, '2000-01-01', '2000-01-01')))
+            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)', ((str(user.id), 1, 1, 1, 0, '2000-01-01', '2000-01-01', inter.guild_id,)))
             results = (1, 1, 1)
         conn.commit()
         conn.close()

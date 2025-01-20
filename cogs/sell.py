@@ -24,7 +24,7 @@ class cSell(commands.Cog):
         ):
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
-            cur.execute("SELECT clothes.clothid, clothes.clothname, clothes.clothimage, outfits.outfitname, outfits.outfitrarity FROM obtained INNER JOIN clothes ON (clothes.clothid = obtained.clothid) LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) WHERE obtained.userid = ? AND clothes.clothname = ?", (inter.user.id, item))
+            cur.execute("SELECT clothes.clothid, clothes.clothname, clothes.clothimage, outfits.outfitname, outfits.outfitrarity FROM obtained INNER JOIN clothes ON (clothes.clothid = obtained.clothid) LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) WHERE obtained.userid = ? AND clothes.clothname = ? AND obtained.guildid = ?", (inter.user.id, item, inter.guild_id,))
             results = cur.fetchone()
             if (results is None):
                 await inter.response.send_message(f'''You either gave me an **incorrect item name**, or you **don't own** it! {emotes["emoteNikkiCry"]}''')
@@ -39,16 +39,16 @@ class cSell(commands.Cog):
                     nonlocal sent_msg
                     noButton.disabled = True
                     yesButton.disabled = True
-                    cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
-                    cur.execute("SELECT blings FROM users WHERE userid = ?", (inter.user.id,))
+                    cur.execute("DELETE FROM obtained WHERE obtained.userid = ? AND clothid = ? AND obtained.guildid = ?", (inter.user.id, clothid, inter.guild_id,))
+                    cur.execute("SELECT blings FROM users WHERE userid = ? AND guildid = ?", (inter.user.id, inter.guild_id,))
                     results = cur.fetchone()
                     userBlings = results[0]
                     if outfitrarity == 3:
-                        cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+1500, inter.user.id,))
+                        cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+1500, inter.user.id, inter.guild_id,))
                     elif outfitrarity == 4:
-                        cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+3500, inter.user.id,))
+                        cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+3500, inter.user.id, inter.guild_id,))
                     else:
-                        cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBlings+5000, inter.user.id,))
+                        cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+5000, inter.user.id, inter.guild_id,))
                     conn.commit()
                     conn.close()
                     sellEmbed = nextcord.Embed()

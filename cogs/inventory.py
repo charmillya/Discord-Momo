@@ -32,13 +32,13 @@ class cInventory(commands.Cog):
         user = user or inter.user
         conn = sqlite3.connect('momodb.db')
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(clothid) FROM obtained WHERE userid = ?", (user.id,))
+        cur.execute("SELECT COUNT(clothid) FROM obtained WHERE obtained.userid = ? AND obtained.guildid = ?", (user.id, inter.guild_id,))
         results = cur.fetchone()
-        if (results == None):
+        if (results[0] == 0):
             await inter.response.send_message(f'''{user.name}'s inventory is **empty**! {emotes["emoteNikkiCry"]}''')
         else:
             nbItems = results[0]
-            cur.execute("SELECT clothes.clothname, outfits.outfitname, clothes.clothimage, outfits.outfitrarity FROM clothes LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) INNER JOIN obtained ON (clothes.clothid = obtained.clothid) WHERE userid = ? ORDER BY outfitname, clothname ASC", (user.id,))
+            cur.execute("SELECT clothes.clothname, outfits.outfitname, clothes.clothimage, outfits.outfitrarity FROM clothes LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) INNER JOIN obtained ON (clothes.clothid = obtained.clothid) WHERE obtained.userid = ? AND obtained.guildid = ? ORDER BY outfitname, clothname ASC", (user.id, inter.guild_id,))
             results = cur.fetchall()
             conn.commit()
             conn.close()
@@ -83,13 +83,14 @@ class cInventory(commands.Cog):
                         inventoryEmbed.set_footer(text=f'{compteur} out of {nbItems}')
                         await inter.edit_original_message(embed=inventoryEmbed, view=myView)
 
-                    nextButton = Button(label="Next!", style=ButtonStyle.blurple)
-                    nextButton.callback = next_callback # affectation de la fonction event "on_click" au bouton
-                    previousButton = Button(label="Previous!", style=ButtonStyle.blurple)
-                    previousButton.callback = previous_callback
-                    myView = View(timeout=180) # myview est un objet View, en gros c'est l'ui, les trucs interactifs qu'on va afficher
-                    myView.add_item(previousButton)
-                    myView.add_item(nextButton)
+                    if(nbItems > 1):
+                        nextButton = Button(label="Next!", style=ButtonStyle.blurple)
+                        nextButton.callback = next_callback # affectation de la fonction event "on_click" au bouton
+                        previousButton = Button(label="Previous!", style=ButtonStyle.blurple)
+                        previousButton.callback = previous_callback
+                        myView = View(timeout=180) # myview est un objet View, en gros c'est l'ui, les trucs interactifs qu'on va afficher
+                        myView.add_item(previousButton)
+                        myView.add_item(nextButton)
 
                     inventoryEmbed = nextcord.Embed()
                     inventoryEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
@@ -104,8 +105,10 @@ class cInventory(commands.Cog):
                     # compteur = 10, ici
                     inventoryEmbed.set_footer(text=f'{compteur} out of {nbItems}')
                     inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=202412221051001")
-                    await inter.response.send_message(embed = inventoryEmbed, view=myView)
-
+                    if(nbItems > 1):
+                        await inter.response.send_message(embed = inventoryEmbed, view=myView)
+                    else:
+                        await inter.response.send_message(embed = inventoryEmbed)
                 else:
                     inventoryEmbed = nextcord.Embed()
                     inventoryEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
@@ -158,13 +161,14 @@ class cInventory(commands.Cog):
                         inventoryEmbed.set_footer(text=f'{compteur} out of {nbItems}')
                         await inter.edit_original_message(embed=inventoryEmbed, view=myView)
 
-                    nextButton = Button(label="Next!", style=ButtonStyle.blurple)
-                    nextButton.callback = next_callback # affectation de la fonction event "on_click" au bouton
-                    previousButton = Button(label="Previous!", style=ButtonStyle.blurple)
-                    previousButton.callback = previous_callback
-                    myView = View(timeout=180) # myview est un objet View, en gros c'est l'ui, les trucs interactifs qu'on va afficher
-                    myView.add_item(previousButton)
-                    myView.add_item(nextButton)
+                    if(nbItems > 1):
+                        nextButton = Button(label="Next!", style=ButtonStyle.blurple)
+                        nextButton.callback = next_callback # affectation de la fonction event "on_click" au bouton
+                        previousButton = Button(label="Previous!", style=ButtonStyle.blurple)
+                        previousButton.callback = previous_callback
+                        myView = View(timeout=180) # myview est un objet View, en gros c'est l'ui, les trucs interactifs qu'on va afficher
+                        myView.add_item(previousButton)
+                        myView.add_item(nextButton)
 
                     compteur = 0
                     inventoryEmbed = nextcord.Embed()
@@ -182,7 +186,10 @@ class cInventory(commands.Cog):
                     compteur += 1
                     inventoryEmbed.set_footer(text=f'{compteur} out of {nbItems}')
                     inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=202412221051001")
-                    await inter.response.send_message(embed = inventoryEmbed, view=myView)
+                    if(nbItems > 1):
+                        await inter.response.send_message(embed = inventoryEmbed, view=myView)
+                    else:
+                        await inter.response.send_message(embed = inventoryEmbed)
 
 
 

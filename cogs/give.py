@@ -31,10 +31,12 @@ class cGive(commands.Cog):
         else:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
-            cur.execute("SELECT clothes.clothid, clothes.clothname, clothes.clothimage, outfits.outfitname, outfits.outfitrarity FROM obtained INNER JOIN clothes ON (clothes.clothid = obtained.clothid) LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) WHERE obtained.userid = ? AND clothes.clothname = ?", (inter.user.id, item))
+            cur.execute("SELECT clothes.clothid, clothes.clothname, clothes.clothimage, outfits.outfitname, outfits.outfitrarity FROM obtained INNER JOIN clothes ON (clothes.clothid = obtained.clothid) LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) INNER JOIN users ON (obtained.userid = users.userid) WHERE obtained.userid = ? AND clothes.clothname = ? AND obtained.guildid = ?", (inter.user.id, item, inter.guild_id,))
             results = cur.fetchone()
             if (results is None):
                 await inter.response.send_message(f'''You either gave me an **incorrect item name**, or you **don't own** it! {emotes["emoteNikkiCry"]}''')
+                conn.commit()
+                conn.close()
             else:
                 clothid = results[0]
                 clothname = results[1]
@@ -51,17 +53,21 @@ class cGive(commands.Cog):
                     cancelledEmbed.description = f'No worries, you kept your item!'
                     cancelledEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
                     cancelledEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/c/c2/Icon_Wardrobe.png/revision/latest?cb=20241222105101")
+                    conn.commit()
+                    conn.close()
                     await inter.edit_original_message(embed=cancelledEmbed, view=myview)
 
                 async def yes_callback(interaction):
                     nonlocal sent_msg
                     noButton.disabled = True
                     yesButton.disabled = True
-                    cur.execute("SELECT * FROM obtained WHERE userid = ? AND clothid = ?", (user.id, clothid,))
+                    conn = sqlite3.connect('momodb.db')
+                    cur = conn.cursor()
+                    cur.execute("SELECT * FROM obtained WHERE obtained.userid = ? AND clothid = ? AND obtained.guildid = ?", (user.id, clothid, inter.guild_id,))
                     results = cur.fetchone()
                     if results is None:
-                        cur.execute("INSERT INTO obtained VALUES (?, ?)", (user.id, clothid,))
-                        cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ?", (inter.user.id, clothid,))
+                        cur.execute("INSERT INTO obtained VALUES (?, ?, ?)", (user.id, clothid, inter.guild_id))
+                        cur.execute("DELETE FROM obtained WHERE userid = ? AND clothid = ? AND guildid = ?", (inter.user.id, clothid, inter.guild_id,))
                         conn.commit()
                         conn.close()
                         giveEmbed = nextcord.Embed()

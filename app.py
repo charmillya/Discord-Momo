@@ -30,6 +30,13 @@ async def echo(ctx, *,args):
     else:
         await None
 
+@bot.command(name="test")
+async def SendMessage(ctx):
+    if ctx.message.author.id in [593889874315182133, 505101653536669697]:
+        await ctx.send(ctx.guild.id)
+    else:
+        await None
+
 
 @bot.event
 async def on_ready():

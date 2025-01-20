@@ -14,12 +14,12 @@ class cLvlEvent(commands.Cog):
         user = message.author.id
         conn = sqlite3.connect('momodb.db')
         cur = conn.cursor()
-        cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ?', (user,))
+        cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ? AND guildid = ?', (user, message.guild.id,))
         results = cur.fetchone()
 
         if results is None:
-            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)', (user, 1, 1, 1, 0, '2000-01-01', '2000-01-01'))
-            cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ?', (user,))
+            cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (user, 1, 1, 1, 0, '2000-01-01', '2000-01-01', message.guild.id))
+            cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ? AND guildid = ?', (user, message.guild.id))
             results = cur.fetchone()
 
         old_xp = results[0] ##the first item in the index, in this case, xp
@@ -30,13 +30,13 @@ class cLvlEvent(commands.Cog):
             new_level = old_level+1
             new_xp = 0
             await message.channel.send(f":up: Congrats {message.author.mention}, you gained a **Mira Level** {emotes['emoteMiraLevel']}, **10,000 Blings** {emotes["emoteBling"]} and you are now Level **{new_level}**!")
-            cur.execute("SELECT blings FROM users WHERE userid = ?", (message.author.id,))
+            cur.execute("SELECT blings FROM users WHERE userid = ? AND guildid = ?", (message.author.id, message.guild.id))
             userBalance = cur.fetchone()[0]
-            cur.execute("UPDATE users SET blings = ? WHERE userid = ?", (userBalance+10000, message.author.id,))
+            cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBalance+10000, message.author.id, message.guild.id))
         else:
             new_level = old_level
         ###add more logic here for successive level-ups
-        cur.execute('UPDATE users SET xp = ?, totalXp = ?, level = ? WHERE userid = ?', (new_xp, perm_xp, new_level, user,))
+        cur.execute('UPDATE users SET xp = ?, totalXp = ?, level = ? WHERE userid = ? AND guildid = ?', (new_xp, perm_xp, new_level, user, message.guild.id))
         conn.commit()
         conn.close()
 

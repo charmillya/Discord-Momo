@@ -1,8 +1,6 @@
 import nextcord
 import random
 from nextcord.ext import commands
-from assets.momoemotes import emotes
-from assets.neededxp import neededXp
 
 class c8Ball(commands.Cog):
 

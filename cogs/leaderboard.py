@@ -23,7 +23,7 @@ class cLeaderboard(commands.Cog):
         if type == 1:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
-            cur.execute("SELECT userid, level, totalxp FROM users ORDER BY totalxp DESC LIMIT 10")
+            cur.execute("SELECT userid, level, totalxp FROM users WHERE guildid = ? ORDER BY totalxp DESC LIMIT 10", (inter.guild_id,))
             results = cur.fetchall()
             conn.commit()
             conn.close()
@@ -48,7 +48,7 @@ class cLeaderboard(commands.Cog):
         elif type == 2:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
-            cur.execute("SELECT userid, blings FROM users ORDER BY blings DESC LIMIT 10")
+            cur.execute("SELECT userid, blings FROM users WHERE guildid = ? ORDER BY blings DESC LIMIT 10", (inter.guild_id,))
             results = cur.fetchall()
             conn.commit()
             conn.close()
@@ -73,7 +73,7 @@ class cLeaderboard(commands.Cog):
         else:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
-            cur.execute("SELECT userid, level, totalxp, blings FROM users ORDER BY totalxp * 100 + blings DESC LIMIT 10")
+            cur.execute("SELECT userid, level, totalxp, blings FROM users WHERE guildid = ? ORDER BY totalxp * 100 + blings DESC LIMIT 10", (inter.guild_id,))
             results = cur.fetchall()
             conn.commit()
             conn.close()
