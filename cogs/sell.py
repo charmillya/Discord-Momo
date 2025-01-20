@@ -14,7 +14,7 @@ class cSell(commands.Cog):
         name="sell",
         description="Sell a piece of clothing of your choice to earn Blings!",
     )           
-    async def give(
+    async def sell(
         self,
         inter: nextcord.Interaction,
         item: str = nextcord.SlashOption(
@@ -98,6 +98,7 @@ class cSell(commands.Cog):
                 sellEmbed.add_field(name="Outfit", value=f'{outfitname}')
                 sellEmbed.add_field(name="Name", value=f"{clothname}")
                 sellEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
+                sellEmbed.set_image(clothimage)
                 yesButton = Button(label="Yes!", style=ButtonStyle.blurple)
                 yesButton.callback = yes_callback # next_callback : retour programme quand on appuie sur yes
                 noButton = Button(label="No..", style=ButtonStyle.blurple)

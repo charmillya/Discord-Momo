@@ -38,7 +38,7 @@ class cInventory(commands.Cog):
             await inter.response.send_message(f'''{user.name}'s inventory is **empty**! {emotes["emoteNikkiCry"]}''')
         else:
             nbItems = results[0]
-            cur.execute("SELECT clothes.clothname, outfits.outfitname, clothes.clothimage, outfits.outfitrarity FROM clothes LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) INNER JOIN obtained ON (clothes.clothid = obtained.clothid) WHERE obtained.userid = ? AND obtained.guildid = ? ORDER BY outfitname, clothname ASC", (user.id, inter.guild_id,))
+            cur.execute("SELECT clothes.clothname, outfits.outfitname, clothes.clothimage, outfits.outfitrarity, obtained.quantity FROM clothes LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) INNER JOIN obtained ON (clothes.clothid = obtained.clothid) WHERE obtained.userid = ? AND obtained.guildid = ? ORDER BY outfitname, clothname ASC", (user.id, inter.guild_id,))
             results = cur.fetchall()
             conn.commit()
             conn.close()
@@ -51,8 +51,8 @@ class cInventory(commands.Cog):
                             compteur = 0
                         inventoryEmbed.clear_fields()
                         for i in results[compteur:]:
+                            inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))} - x{i[4]}', inline=False)
                             compteur += 1
-                            inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
                             if compteur % 10 == 0:
                                 break  
                         
@@ -75,8 +75,8 @@ class cInventory(commands.Cog):
                                 compteur = nbItems-(nbItems%10)
                         inventoryEmbed.clear_fields()
                         for i in results[compteur:]:
+                            inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))} - x{i[4]}', inline=False)
                             compteur += 1
-                            inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
                             if compteur % 10 == 0:
                                 break  
                         
@@ -97,8 +97,8 @@ class cInventory(commands.Cog):
                     inventoryEmbed.title = (f"{user.name}'s inventory {emotes["emotePendants"]}")
                     compteur = 0
                     for i in results:
+                        inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))} - x{i[4]}', inline=False)
                         compteur += 1
-                        inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
                         if compteur % 10 == 0:
                             break
 
@@ -114,7 +114,7 @@ class cInventory(commands.Cog):
                     inventoryEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
                     inventoryEmbed.title = (f"{user.name}'s inventory {emotes["emotePendants"]}")
                     for i in results:
-                        inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))}', inline=False)
+                        inventoryEmbed.add_field(name=f'{str((i[1]))}', value=f'{str((i[0]))} - x{i[4]}', inline=False)
 
                     inventoryEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/b/b7/Icon_Pendants.png/revision/latest?cb=202412221051001")
                     await inter.response.send_message(embed = inventoryEmbed)
@@ -134,6 +134,7 @@ class cInventory(commands.Cog):
                         inventoryEmbed.add_field(name=f'Outfit', value=f'{results[compteur][1]}')
                         inventoryEmbed.add_field(name=f'Name', value=f'{results[compteur][0]}')
                         inventoryEmbed.add_field(name=f'Rarity', value=f'{results[compteur][3]} {emotes["emoteStar"]}')
+                        inventoryEmbed.add_field(name=f'Quantity', value=f'{results[compteur][4]}')
                         inventoryEmbed.set_image(results[compteur][2])
                         compteur += 1
                         
@@ -155,6 +156,7 @@ class cInventory(commands.Cog):
                         inventoryEmbed.add_field(name=f'Outfit', value=f'{results[compteur][1]}')
                         inventoryEmbed.add_field(name=f'Name', value=f'{results[compteur][0]}')
                         inventoryEmbed.add_field(name=f'Rarity', value=f'{results[compteur][3]} {emotes["emoteStar"]}')
+                        inventoryEmbed.add_field(name=f'Quantity', value=f'{results[compteur][4]}')
                         inventoryEmbed.set_image(results[compteur][2])
                         compteur += 1
                         
@@ -182,6 +184,7 @@ class cInventory(commands.Cog):
                     inventoryEmbed.add_field(name=f'Outfit', value=f'{results[compteur][1]}')
                     inventoryEmbed.add_field(name=f'Name', value=f'{results[compteur][0]}')
                     inventoryEmbed.add_field(name=f'Rarity', value=f'{results[compteur][3]} {emotes["emoteStar"]}')
+                    inventoryEmbed.add_field(name=f'Quantity', value=f'{results[compteur][4]}')
                     inventoryEmbed.set_image(results[compteur][2])
                     compteur += 1
                     inventoryEmbed.set_footer(text=f'{compteur} out of {nbItems}')

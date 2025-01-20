@@ -47,9 +47,10 @@ class cDaily(commands.Cog):
                     results = cur.fetchone()
                     if results != None:
                         quantity = results[1]
+                        cur.execute("UPDATE obtained SET quantity = ? WHERE userid = ? and clothid = ? and guildid = ?", (quantity+1, inter.user.id, selectedClothID, inter.guild_id))
                     else:
                         quantity = 1
-                    cur.execute("INSERT INTO obtained VALUES (?, ?, ?, ?)", (inter.user.id, selectedClothID, quantity, inter.guild_id,))
+                        cur.execute("INSERT INTO obtained VALUES (?, ?, ?, ?)", (inter.user.id, selectedClothID, quantity, inter.guild_id))
                     cur.execute("UPDATE users SET lastdailypull = ? WHERE userid = ? AND guildid = ?", (currDate, inter.user.id, inter.guild_id,))
                     conn.commit()
                     conn.close()
