@@ -43,13 +43,14 @@ class cDaily(commands.Cog):
                     clothname = results[2]
                     clothimage = results[3]
                     outfitrarity = results[4]
-                    cur.execute("SELECT clothid, quantity FROM obtained WHERE clothid = ? AND guildid = ?", (selectedClothID, inter.guild_id,))
+                    cur.execute("SELECT clothid, quantity FROM obtained WHERE userid = ? and clothid = ? AND guildid = ?", (inter.user.id, selectedClothID, inter.guild_id,))
                     results = cur.fetchone()
+                    quantity = 1
                     if results != None:
                         quantity = results[1]
                         cur.execute("UPDATE obtained SET quantity = ? WHERE userid = ? and clothid = ? and guildid = ?", (quantity+1, inter.user.id, selectedClothID, inter.guild_id))
+                        quantity += 1
                     else:
-                        quantity = 1
                         cur.execute("INSERT INTO obtained VALUES (?, ?, ?, ?)", (inter.user.id, selectedClothID, quantity, inter.guild_id))
                     cur.execute("UPDATE users SET lastdailypull = ? WHERE userid = ? AND guildid = ?", (currDate, inter.user.id, inter.guild_id,))
                     conn.commit()
@@ -67,6 +68,10 @@ class cDaily(commands.Cog):
                     dailyEmbed.add_field(name="Outfit", value=f'{str((outfitname))}')
                     dailyEmbed.add_field(name="Name", value=f"{str(clothname)}")
                     dailyEmbed.add_field(name="Rarity", value=f"{str(outfitrarity)}  {emotes['emoteStar']}")
+                    if quantity == 1:
+                        dailyEmbed.add_field(name="New owned quantity", value=f'{quantity} **(New!)**')
+                    else:
+                        dailyEmbed.add_field(name="New owned quantity", value=f'{quantity}')
                     dailyEmbed.set_image(clothimage)
                     await inter.response.send_message(embed = dailyEmbed)
                 else:
@@ -89,8 +94,8 @@ class cDaily(commands.Cog):
                 dailyEmbed.title = (f"Your daily Blings delivery! {emotes["emoteBling"]}")
                 dailyEmbed.description = "Your Blings balance has been succesfully incremented:"
                 dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/d/dd/Bling_Icon.png/revision/latest?cb=20241208230112")
-                dailyEmbed.add_field(name="Old balance", value=f'{userBlings}')
-                dailyEmbed.add_field(name="New balance", value=f"{userBlings+3000}")
+                dailyEmbed.add_field(name="Old balance", value=f'{userBlings} {emotes["emoteBling"]}')
+                dailyEmbed.add_field(name="New balance", value=f"{userBlings+3000} {emotes["emoteBling"]}")
                 await inter.response.send_message(embed = dailyEmbed)
             else:
                 await inter.response.send_message(f'''You've **already obtained** your daily Blings delivery! Come back **tomorrow**! {emotes["emoteNikkiWink"]}''')

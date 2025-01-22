@@ -24,7 +24,7 @@ class cSell(commands.Cog):
         ):
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
-            cur.execute("SELECT clothes.clothid, clothes.clothname, clothes.clothimage, outfits.outfitname, outfits.outfitrarity FROM obtained INNER JOIN clothes ON (clothes.clothid = obtained.clothid) LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) WHERE obtained.userid = ? AND clothes.clothname = ? AND obtained.guildid = ?", (inter.user.id, item, inter.guild_id,))
+            cur.execute("SELECT clothes.clothid, clothes.clothname, clothes.clothimage, outfits.outfitname, outfits.outfitrarity, obtained.quantity FROM obtained INNER JOIN clothes ON (clothes.clothid = obtained.clothid) LEFT OUTER JOIN outfits ON (outfits.outfitid = clothes.outfitid) WHERE obtained.userid = ? AND clothes.clothname = ? AND obtained.guildid = ?", (inter.user.id, item, inter.guild_id,))
             results = cur.fetchone()
             if (results is None):
                 await inter.response.send_message(f'''You either gave me an **incorrect item name**, or you **don't own** it! {emotes["emoteNikkiCry"]}''')
@@ -34,19 +34,23 @@ class cSell(commands.Cog):
                 clothimage = results[2]
                 outfitname = results[3]
                 outfitrarity = results[4]
+                quantity = results[5]
 
                 async def yes_callback(interaction):
                     nonlocal sent_msg
                     noButton.disabled = True
                     yesButton.disabled = True
-                    cur.execute("DELETE FROM obtained WHERE obtained.userid = ? AND clothid = ? AND obtained.guildid = ?", (inter.user.id, clothid, inter.guild_id,))
+                    if(quantity == 1):
+                        cur.execute("DELETE FROM obtained WHERE obtained.userid = ? AND clothid = ? AND obtained.guildid = ?", (inter.user.id, clothid, inter.guild_id,))
+                    else:
+                        cur.execute("UPDATE obtained SET quantity = ? WHERE obtained.userid = ? AND clothid = ? AND obtained.guildid = ?", (quantity-1, inter.user.id, clothid, inter.guild_id,))
                     cur.execute("SELECT blings FROM users WHERE userid = ? AND guildid = ?", (inter.user.id, inter.guild_id,))
                     results = cur.fetchone()
                     userBlings = results[0]
                     if outfitrarity == 3:
                         cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+1500, inter.user.id, inter.guild_id,))
                     elif outfitrarity == 4:
-                        cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+3500, inter.user.id, inter.guild_id,))
+                        cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+2500, inter.user.id, inter.guild_id,))
                     else:
                         cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+5000, inter.user.id, inter.guild_id,))
                     conn.commit()
@@ -68,9 +72,11 @@ class cSell(commands.Cog):
                     if outfitrarity == 3:
                         sellEmbed.add_field(name="New balance", value=f"{userBlings+1500} {emotes["emoteBling"]}")
                     elif outfitrarity == 4:
-                        sellEmbed.add_field(name="New balance", value=f"{userBlings+3500} {emotes["emoteBling"]}")
+                        sellEmbed.add_field(name="New balance", value=f"{userBlings+2500} {emotes["emoteBling"]}")
                     else:
                         sellEmbed.add_field(name="New balance", value=f"{userBlings+5000} {emotes["emoteBling"]}")
+                    if(quantity != 1):
+                        sellEmbed.add_field(name="New owned quantity", value=quantity-1)
                     sellEmbed.set_image(clothimage)
                     await inter.edit_original_message(embed=sellEmbed, view=myview)
 
@@ -87,7 +93,7 @@ class cSell(commands.Cog):
 
                 sellEmbed = nextcord.Embed()
                 sellEmbed.title = (f"Selling confirmation :bangbang:")
-                sellEmbed.description = f'Are you sure that you want to sell the following piece of clothing ?'
+                sellEmbed.description = f'Are you sure that you want to sell the following piece of clothing (or a dupe if you have several of it) ?'
                 if outfitrarity == 3:
                     sellEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
                 elif outfitrarity == 4:
@@ -98,6 +104,7 @@ class cSell(commands.Cog):
                 sellEmbed.add_field(name="Outfit", value=f'{outfitname}')
                 sellEmbed.add_field(name="Name", value=f"{clothname}")
                 sellEmbed.add_field(name="Rarity", value=f"{outfitrarity} {emotes["emoteStar"]}")
+                sellEmbed.add_field(name="Owned quantity", value=quantity)
                 sellEmbed.set_image(clothimage)
                 yesButton = Button(label="Yes!", style=ButtonStyle.blurple)
                 yesButton.callback = yes_callback # next_callback : retour programme quand on appuie sur yes

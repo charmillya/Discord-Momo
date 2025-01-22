@@ -35,13 +35,14 @@ class cPull(commands.Cog):
                 clothname = results[2]
                 clothimage = results[3]
                 outfitrarity = results[4]
-                cur.execute("SELECT clothid, quantity FROM obtained WHERE clothid = ? AND guildid = ?", (selectedClothID, inter.guild_id,))
+                cur.execute("SELECT clothid, quantity FROM obtained WHERE userid = ? and clothid = ? AND guildid = ?", (inter.user.id, selectedClothID, inter.guild_id,))
                 results = cur.fetchone()
+                quantity = 1
                 if results != None:
                     quantity = results[1]
                     cur.execute("UPDATE obtained SET quantity = ? WHERE userid = ? and clothid = ? and guildid = ?", (quantity+1, inter.user.id, selectedClothID, inter.guild_id))
+                    quantity += 1
                 else:
-                    quantity = 1
                     cur.execute("INSERT INTO obtained VALUES (?, ?, ?, ?)", (inter.user.id, selectedClothID, quantity, inter.guild_id))
                 cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBalance-5000, inter.user.id, inter.guild_id,))
                 pullEmbed = nextcord.Embed()
@@ -58,6 +59,10 @@ class cPull(commands.Cog):
                 pullEmbed.add_field(name="Outfit", value=f'{str((outfitname))}')
                 pullEmbed.add_field(name="Name", value=f"{str(clothname)}")
                 pullEmbed.add_field(name="Rarity", value=f"{str(outfitrarity)}  {emotes['emoteStar']}")
+                if quantity == 1:
+                    pullEmbed.add_field(name="New owned quantity", value=f'{quantity} **(New!)**')
+                else:
+                    pullEmbed.add_field(name="New owned quantity", value=f'{quantity}')
                 cur.execute("SELECT blings FROM users WHERE userid = ? AND guildid = ?", (inter.user.id, inter.guild_id,))
                 results = cur.fetchone()
                 conn.commit()

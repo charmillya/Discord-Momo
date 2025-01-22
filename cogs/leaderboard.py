@@ -37,13 +37,13 @@ class cLeaderboard(commands.Cog):
                 counter += 1
                 currUser = await self.bot.fetch_user(i[0])
                 if counter == 1:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :first_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :first_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
                 elif counter == 2:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :second_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :second_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
                 elif counter == 3:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :third_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :third_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
                 else:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name}', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name}', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
             await inter.response.send_message(embed=leaderboardEmbed)
         elif type == 2:
             conn = sqlite3.connect('momodb.db')
@@ -62,13 +62,13 @@ class cLeaderboard(commands.Cog):
                 counter += 1
                 currUser = await self.bot.fetch_user(i[0])
                 if counter == 1:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :first_place:', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :first_place:', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
                 elif counter == 2:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :second_place:', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :second_place:', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
                 elif counter == 3:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :third_place:', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :third_place:', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
                 else:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name}', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name}', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
             await inter.response.send_message(embed=leaderboardEmbed)
         else:
             conn = sqlite3.connect('momodb.db')
@@ -87,13 +87,13 @@ class cLeaderboard(commands.Cog):
                 counter += 1
                 currUser = await self.bot.fetch_user(i[0])
                 if counter == 1:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :first_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :first_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
                 elif counter == 2:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :second_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :second_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
                 elif counter == 3:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name} :third_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :third_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
                 else:
-                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.name}', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
+                    leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name}', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
             await inter.response.send_message(embed=leaderboardEmbed)
 
         
