@@ -9,8 +9,7 @@ class cWelcomeEvent(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: nextcord.Member):
-        if member.guild.id == 1323576828539179071:
-            role = nextcord.utils.get(member.guild.roles, name="nikki's")
+        if member.guild.id == 1323383627492364319:
             channel = self.bot.get_channel(1323572410452017193)
             welcomeEmbed = nextcord.Embed()
             await channel.send(member.mention)
@@ -19,7 +18,6 @@ class cWelcomeEvent(commands.Cog):
             welcomeEmbed.set_thumbnail('https://stickershop.line-scdn.net/stickershop/v1/product/28246239/LINEStorePC/main.png?v=1')
             welcomeEmbed.set_image(member.avatar.url)
             welcomeEmbed.description = f'''Hi there, {member.name}! I am __**Momo**__, yours truly **travel companion**! I invite you to wander through our different **discussion channels**, there are so many nice **nikki's** out there~ ! {emotes["emoteNikkiWink"]}'''
-            await member.add_roles(role)
             await channel.send(embed=welcomeEmbed)
 
 def setup(bot: commands.Bot):

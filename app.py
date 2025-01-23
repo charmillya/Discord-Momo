@@ -3,7 +3,7 @@ import os
 import random
 from nextcord.ext import commands
 from assets.momoemotes import emotes
-intents = nextcord.Intents.default()
+intents = nextcord.Intents.all()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix = "!momo ", case_insensitive=True, intents=intents,status=nextcord.Status.idle, activity=nextcord.Activity(type=nextcord.ActivityType.listening, name="Together Till Infinity!")) # instanciation de l'objet bot

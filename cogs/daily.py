@@ -85,7 +85,7 @@ class cDaily(commands.Cog):
             lastDailyBlings = results[1]
             currDate = datetime.today().strftime('%Y-%m-%d')
             if currDate != lastDailyBlings:
-                cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+3000, inter.user.id, inter.guild_id,))
+                cur.execute("UPDATE users SET blings = ? WHERE userid = ? AND guildid = ?", (userBlings+5000, inter.user.id, inter.guild_id,))
                 cur.execute("UPDATE users SET lastdailyblings = ? WHERE userid = ? AND guildid = ?", (currDate, inter.user.id, inter.guild_id,))
                 conn.commit()
                 conn.close()
@@ -95,7 +95,7 @@ class cDaily(commands.Cog):
                 dailyEmbed.description = "Your Blings balance has been succesfully incremented:"
                 dailyEmbed.set_thumbnail("https://static.wikia.nocookie.net/infinity-nikki/images/d/dd/Bling_Icon.png/revision/latest?cb=20241208230112")
                 dailyEmbed.add_field(name="Old balance", value=f'{userBlings} {emotes["emoteBling"]}')
-                dailyEmbed.add_field(name="New balance", value=f"{userBlings+3000} {emotes["emoteBling"]}")
+                dailyEmbed.add_field(name="New balance", value=f"{userBlings+5000} {emotes["emoteBling"]}")
                 await inter.response.send_message(embed = dailyEmbed)
             else:
                 await inter.response.send_message(f'''You've **already obtained** your daily Blings delivery! Come back **tomorrow**! {emotes["emoteNikkiWink"]}''')

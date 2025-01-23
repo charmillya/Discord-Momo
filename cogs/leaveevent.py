@@ -12,7 +12,7 @@ class cLeaveEvent(commands.Cog):
         if member.guild.id == 1323383627492364319:
             channel = self.bot.get_channel(1323572410452017193)
             welcomeEmbed = nextcord.Embed()
-            welcomeEmbed.title = f'Farewell, stylist {member.name}! {emotes["emoteNikkiCry"]}'
+            welcomeEmbed.title = f'Farewell, stylist {member.display_name}! {emotes["emoteNikkiCry"]}'
             welcomeEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
             welcomeEmbed.set_image(member.avatar.url)
             welcomeEmbed.description = f'I hope that we will cross paths again .. {emotes["emoteNikkiCry"]}'

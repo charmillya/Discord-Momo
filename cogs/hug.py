@@ -12,7 +12,7 @@ class cHug(commands.Cog):
 
     @nextcord.slash_command(
         name="hug",
-        description="Hug a chosen stylist!",
+        description="Hug up to 5 chosen stylists!",
     )   
     async def hug(
         self,
@@ -22,13 +22,50 @@ class cHug(commands.Cog):
             name="stylist",
             description="The stylist you want to hug!"
         ),
+        user2: nextcord.Member = nextcord.SlashOption(
+            required=False,
+            name="stylist_2",
+            description="Another stylist you want to hug!"
+        ),
+        user3: nextcord.Member = nextcord.SlashOption(
+            required=False,
+            name="stylist_3",
+            description="Another stylist you want to hug!"
+        ),
+        user4: nextcord.Member = nextcord.SlashOption(
+            required=False,
+            name="stylist_4",
+            description="Another stylist you want to hug!"
+        ),
+        user5: nextcord.Member = nextcord.SlashOption(
+            required=False,
+            name="stylist_5",
+            description="Another stylist you want to hug!"
+        ),
         ):
 
         response = requests.get('https://api.any-bot.xyz/api/v1/hug')
         responseJSON = json.loads(response.text)
 
         hugEmbed = nextcord.Embed()
-        hugEmbed.title = f'''__{inter.user.display_name}__ hugs __{user.display_name}__!'''
+        if user2 or user3 or user4 or user5:
+            allUsers = "" + user.display_name + " and "
+            if user3:
+                allUsers += user2.display_name + " and "
+            else: 
+                allUsers += user2.display_name
+            if user4:
+                allUsers += user3.display_name + " and "
+            elif user3: 
+                allUsers += user3.display_name
+            if user5:
+                allUsers += user4.display_name + " and"
+                allUsers += user5.display_name
+            elif user4: 
+                allUsers += user4.display_name
+        else:
+            allUsers = user.display_name
+        hugEmbed.title = f'''__{inter.user.display_name}__ hugs __{allUsers}__!'''
         hugEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
         hugEmbed.set_image(responseJSON["image"])
 
