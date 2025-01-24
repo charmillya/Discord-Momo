@@ -1,6 +1,6 @@
 # Discord-Momo
 
-# an introduction to @Momo#0583's commands and what he can do for you @stylist -`♡´-  :nikki_wink:  
+# an introduction to Momo's commands and what he can do for you  -`♡´-
 
 ｡ﾟ•┈꒰ა ♡ ໒꒱┈•  ｡ﾟ
 
