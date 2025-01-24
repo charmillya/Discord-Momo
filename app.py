@@ -41,6 +41,8 @@ async def SendMessage(ctx):
 
 @bot.event
 async def on_ready():
+    print("_______________________________________________________________")
     print(f"Logged in as: {bot.user.name} - {bot.user.id}")
+    print("_______________________________________________________________")
 
 bot.run(os.getenv('TOKEN'))

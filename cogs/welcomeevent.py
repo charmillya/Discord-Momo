@@ -19,6 +19,10 @@ class cWelcomeEvent(commands.Cog):
             welcomeEmbed.set_image(member.avatar.url)
             welcomeEmbed.description = f'''Hi there, {member.name}! I am __**Momo**__, yours truly **travel companion**! I invite you to wander through our different **discussion channels**, there are so many nice **nikki's** out there~ ! {emotes["emoteNikkiWink"]}'''
             await channel.send(embed=welcomeEmbed)
-
+            try:
+                await member.send(f'''Hi there, {member.display_name}! I am __**Momo**__, yours truly **travel companion** on Nikkiscord server! I invite you to wander through our different **discussion channels**, there are so many nice **nikki's** out there~ ! {emotes["emoteNikkiWink"]}''')
+            except nextcord.Forbidden:
+                pass
+                
 def setup(bot: commands.Bot):
     bot.add_cog(cWelcomeEvent(bot))

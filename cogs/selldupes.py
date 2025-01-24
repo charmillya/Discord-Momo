@@ -37,22 +37,22 @@ class cSellDupes(commands.Cog):
                     clothname = item[6]
                     outfitname = item[10]
                     outfitrarity = item[12]
-
-                    cur.execute("delete from obtained where userid = ? and clothid = ? and guildid = ?", (inter.user.id, clothid, inter.guild_id,))
+                    
+                    cur.execute("update obtained set quantity = 1 where userid = ? and clothid = ? and guildid = ?", (inter.user.id, clothid, inter.guild_id,))
 
                     cur.execute("select blings from users where userid = ? and guildid = ?", (inter.user.id, inter.guild_id,))
                     results = cur.fetchone()
                     blings = results[0] # blings de l'utilisateur
                     if int(outfitrarity) == 3:
-                        totalAmount += 1500*quantity-1
-                        cur.execute("update users set blings = ? where userid = ? and guildid = ?", (blings + 1500*quantity-1, inter.user.id, inter.guild_id,))
+                        totalAmount += 1500*(quantity-1)
+                        cur.execute("update users set blings = ? where userid = ? and guildid = ?", (blings + 1500*(quantity-1), inter.user.id, inter.guild_id,))
                     elif int(outfitrarity) == 4:
-                        totalAmount += 2500*quantity-1
-                        cur.execute("update users set blings = ? where userid = ? and guildid = ?", (blings + 2500*quantity-1, inter.user.id, inter.guild_id,))
+                        totalAmount += 2500*(quantity-1)
+                        cur.execute("update users set blings = ? where userid = ? and guildid = ?", (blings + 2500*(quantity-1), inter.user.id, inter.guild_id,))
                     else:
-                        totalAmount += 5000*quantity-1
-                        cur.execute("update users set blings = ? where userid = ? and guildid = ?", (blings + 5000*quantity-1, inter.user.id, inter.guild_id,))
-                    totalQty += 1
+                        totalAmount += 5000*(quantity-1)
+                        cur.execute("update users set blings = ? where userid = ? and guildid = ?", (blings + 5000*(quantity-1), inter.user.id, inter.guild_id,))
+                    totalQty += quantity-1
 
                 conn.commit()
                 conn.close()

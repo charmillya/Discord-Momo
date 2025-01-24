@@ -61,6 +61,7 @@ class cDailyShop(commands.Cog):
             else:
                 dailyShopEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
                 dailyShopEmbed.add_field(name="Price", value=f'7500 {emotes["emoteBling"]}')
+            dailyShopEmbed.add_field(name="Owned quantity", value=check_obtained(inter.user.id, inter.guild_id, results[compteur-1][0]))
             dailyShopEmbed.set_image(results[compteur-1][3])
 
             dailyShopEmbed.set_footer(text=f'{compteur} out of {nbItems}')
@@ -141,10 +142,19 @@ class cDailyShop(commands.Cog):
             else:
                 dailyShopEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
                 dailyShopEmbed.add_field(name="Price", value=f'7500 {emotes["emoteBling"]}')
+            dailyShopEmbed.add_field(name="Owned quantity", value=check_obtained(inter.user.id, inter.guild_id, results[compteur-1][0]))
             dailyShopEmbed.set_image(results[compteur-1][3])
 
             dailyShopEmbed.set_footer(text=f'{compteur} out of {nbItems}')
             await inter.edit_original_message(embed=dailyShopEmbed, view=myView)
+
+        def check_obtained(userid, guildid, clothid)->str:
+            cur.execute("SELECT quantity FROM obtained where userid = ? and guildid = ? and clothid = ?", (userid, guildid, clothid,))
+            resultsObtained = cur.fetchone()
+            if resultsObtained:
+                return resultsObtained[0]
+            else:
+                return "0"
 
             
         compteur = 1
@@ -161,6 +171,7 @@ class cDailyShop(commands.Cog):
         else:
             dailyShopEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
             dailyShopEmbed.add_field(name="Price", value=f'7500 {emotes["emoteBling"]}')
+        dailyShopEmbed.add_field(name="Owned quantity", value=check_obtained(inter.user.id, inter.guild_id, results[compteur-1][0]))
         dailyShopEmbed.set_image(results[compteur-1][3])
         dailyShopEmbed.set_footer(text=f'{compteur} out of {nbItems}')
         nextButton = Button(label="Next!", style=ButtonStyle.blurple)
@@ -169,7 +180,7 @@ class cDailyShop(commands.Cog):
         previousButton.callback = previous_callback
         buyButton = Button(label="Buy!", style=ButtonStyle.blurple)
         buyButton.callback = buy_callback
-        myView = View(timeout=180) # myview est un objet View, en gros c'est l'ui, les trucs interactifs qu'on va afficher
+        myView = View(timeout=200) # myview est un objet View, en gros c'est l'ui, les trucs interactifs qu'on va afficher
         myView.add_item(previousButton)
         myView.add_item(buyButton)
         myView.add_item(nextButton)
