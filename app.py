@@ -1,6 +1,7 @@
 import nextcord
 import os
 import random
+from dotenv import load_dotenv
 from nextcord.ext import commands
 from assets.momoemotes import emotes
 intents = nextcord.Intents.all()
@@ -9,6 +10,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix = "!momo ", case_insensitive=True, intents=intents,status=nextcord.Status.idle, activity=nextcord.Activity(type=nextcord.ActivityType.listening, name="Together Till Infinity!")) # instanciation de l'objet bot
 
 cmds = []
+load_dotenv()
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
@@ -41,4 +43,4 @@ async def SendMessage(ctx):
 async def on_ready():
     print(f"Logged in as: {bot.user.name} - {bot.user.id}")
 
-bot.run("MTMyNjU4Njk2MzYwMzYxOTk5NQ.GFQUyv.EbWFC6tB2t89qVzyyKVTqwTMWQ2dh1-t0H0Hh8")
+bot.run(os.getenv('TOKEN'))
