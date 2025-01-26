@@ -45,6 +45,7 @@ class cDailyShop(commands.Cog):
 
         async def previous_callback(interaction): # clic sur previous
             nonlocal compteur
+            myView.remove_item(resumeButton)
             compteur -= 1
             if compteur < 1:
                 compteur = nbItems
@@ -72,6 +73,8 @@ class cDailyShop(commands.Cog):
             previousButton.disabled = True
             nextButton.disabled = True
             buyButton.disabled = True
+            resumeButton.disabled = False
+            myView.add_item(resumeButton)
 
             cur.execute("SELECT blings FROM users where userid = ? and guildid = ?", (inter.user.id, inter.guild_id,))
             resultsBlings = cur.fetchone()
@@ -126,9 +129,34 @@ class cDailyShop(commands.Cog):
 
         async def next_callback(interaction):
             nonlocal compteur
+            myView.remove_item(resumeButton)
             compteur += 1
             if compteur > nbItems:
                 compteur = 1
+            dailyShopEmbed.clear_fields()
+            dailyShopEmbed.add_field(name="Outfit", value=results[compteur-1][6])
+            dailyShopEmbed.add_field(name="Name", value=results[compteur-1][2])
+            dailyShopEmbed.add_field(name="Rarity", value=f'{str(results[compteur-1][8])} {emotes["emoteStar"]}')
+            if results[compteur-1][8] == 3:
+                dailyShopEmbed.colour = nextcord.colour.Color.from_rgb(145, 105, 255)
+                dailyShopEmbed.add_field(name="Price", value=f'2500 {emotes["emoteBling"]}')
+            elif results[compteur-1][8] == 4:
+                dailyShopEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 250)
+                dailyShopEmbed.add_field(name="Price", value=f'5000 {emotes["emoteBling"]}')
+            else:
+                dailyShopEmbed.colour = nextcord.colour.Color.from_rgb(255, 94, 164)
+                dailyShopEmbed.add_field(name="Price", value=f'7500 {emotes["emoteBling"]}')
+            dailyShopEmbed.add_field(name="Owned quantity", value=check_obtained(inter.user.id, inter.guild_id, results[compteur-1][0]))
+            dailyShopEmbed.set_image(results[compteur-1][3])
+
+            dailyShopEmbed.set_footer(text=f'{compteur} out of {nbItems}')
+            await inter.edit_original_message(embed=dailyShopEmbed, view=myView)
+
+        async def resume_shopping_callback(interaction):
+            nextButton.disabled = False
+            previousButton.disabled = False
+            buyButton.disabled = False
+            myView.remove_item(resumeButton)
             dailyShopEmbed.clear_fields()
             dailyShopEmbed.add_field(name="Outfit", value=results[compteur-1][6])
             dailyShopEmbed.add_field(name="Name", value=results[compteur-1][2])
@@ -180,6 +208,8 @@ class cDailyShop(commands.Cog):
         previousButton.callback = previous_callback
         buyButton = Button(label="Buy!", style=ButtonStyle.blurple)
         buyButton.callback = buy_callback
+        resumeButton = Button(label="Go back to shopping!", style=ButtonStyle.blurple)
+        resumeButton.callback = resume_shopping_callback # affectation de la fonction event "on_click" au bouton
         myView = View(timeout=200) # myview est un objet View, en gros c'est l'ui, les trucs interactifs qu'on va afficher
         myView.add_item(previousButton)
         myView.add_item(buyButton)
