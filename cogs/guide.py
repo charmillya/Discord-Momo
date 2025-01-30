@@ -46,6 +46,15 @@ class cGuide(commands.Cog):
         guidePictureTutorialEmbed.set_image("https://pbs.twimg.com/media/GgtOy-tXAAAmR6a?format=jpg&name=large")
         guidePictureTutorialEmbed.set_footer(text="Source: Sarah @toradowa")
         return guidePictureTutorialEmbed
+    
+    def GuidePhotoEditing(self, inter: nextcord.Interaction):
+        guidePhotoEditingEmbed = nextcord.Embed()
+        guidePhotoEditingEmbed.colour = Color.from_rgb(255, 187, 69)
+        guidePhotoEditingEmbed.title = "Tips & Tricks on photo editing!"
+        guidePhotoEditingEmbed.description = "You can find the guide [**here**](https://x.com/elfaerealm/status/1882213218292260954?s=46)!"
+        guidePhotoEditingEmbed.set_image("https://pbs.twimg.com/media/Gh728aVXUAAwkhB?format=jpg&name=small")
+        guidePhotoEditingEmbed.set_footer(text="Source: Ellie @ewellie")
+        return guidePhotoEditingEmbed
 
     @nextcord.slash_command(
         name="guide",
@@ -57,7 +66,7 @@ class cGuide(commands.Cog):
         guide: str = nextcord.SlashOption(
             name="type",
             choices={"Infinity Nikki's Map": "guideMap", "Chests Guide": "guideChests", "Eurekas & their upgrade colors": "guideEurekas",
-                    "In-depth Picture Tutorial": "guidePictureTutorial"},
+                    "In-depth Picture Tutorial": "guidePictureTutorial", "Tips & Tricks on photo editing": "guidePhotoEditing"},
         ),
         ):
         if guide == "guideMap":
@@ -68,6 +77,8 @@ class cGuide(commands.Cog):
             await inter.response.send_message(embed=self.GuideEurekas(inter))
         elif guide == "guidePictureTutorial":
             await inter.response.send_message(embed=self.GuidePictureTutorial(inter))
+        elif guide == "guidePhotoEditing":
+            await inter.response.send_message(embed=self.GuidePhotoEditing(inter))
 
 
 def setup(bot: commands.Bot):

@@ -14,7 +14,7 @@ class c8Ball(commands.Cog):
     async def view(
         self,
         inter: nextcord.Interaction,
-        name: str = nextcord.SlashOption(
+        question: str = nextcord.SlashOption(
             name="question",
             description="The question you want me to answer to!"
         ),
@@ -23,11 +23,10 @@ class c8Ball(commands.Cog):
            "Please stop bothering me with that..", "Hear me out..", "I don't really see the point?", "YESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYES",
            "NONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONONO"]
         ballEmbed = nextcord.Embed()
-        ballEmbed.title = "8ball! :8ball:"
+        ballEmbed.title = question
         ballEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
-        ballEmbed.add_field(name="Your question:", value=f'{name}')
-        ballEmbed.add_field(name="My answer:", value=random.choice(answers))
-        ballEmbed.set_thumbnail("https://discord.com/assets/4aae9b932841972e89af.svg")
+        ballEmbed.description = f"{random.choice(answers)}"
+        ballEmbed.set_thumbnail(inter.user.avatar.url)
         await inter.response.send_message(embed=ballEmbed)
 
         

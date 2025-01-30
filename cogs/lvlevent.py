@@ -19,7 +19,7 @@ class cLvlEvent(commands.Cog):
             results = cur.fetchone()
 
             if results is None:
-                cur.execute(f'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (user, 1, 1, 1, 0, '2000-01-01', '2000-01-01', message.guild.id))
+                cur.execute(f'INSERT INTO users (userid, level, totalxp, xp, blings, lastdailypull, lastdailyblings, guildid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (user, 1, 1, 1, 0, '2000-01-01', '2000-01-01', message.guild.id))
                 cur.execute(f'SELECT xp, totalxp, level FROM users WHERE userID = ? AND guildid = ?', (user, message.guild.id))
                 results = cur.fetchone()
 
