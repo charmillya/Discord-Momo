@@ -3,16 +3,16 @@ import sqlite3
 from nextcord.ext import commands
 from assets.momoemotes import emotes
 
-class cPull(commands.Cog):
+class cResonate(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
     @nextcord.slash_command(
-        name="pull",
+        name="resonate",
         description="Buy a random piece of clothing for 5,000 Blings!",
     )   
-    async def pull(
+    async def resonate(
         self,
         inter: nextcord.Interaction
     ):
@@ -75,4 +75,4 @@ class cPull(commands.Cog):
             await inter.response.send_message("You've already collected all pieces of clothing!")
 
 def setup(bot: commands.Bot):
-    bot.add_cog(cPull(bot))
+    bot.add_cog(cResonate(bot))

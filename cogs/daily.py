@@ -12,14 +12,14 @@ class cDaily(commands.Cog):
 
     @nextcord.slash_command(
         name="daily",
-        description="Claim your daily random piece of clothing and Blings delivery!",
+        description="Claim your daily random piece of clothing and/or Blings delivery!",
     )           
     async def daily(
         self,
         inter: nextcord.Interaction,
         type: int = nextcord.SlashOption(
             name="type",
-            choices={"Pull": 1, "Blings": 2},
+            choices={"Resonance": 1, "Blings": 2},
         ),
         ):
         conn = sqlite3.connect('momodb.db')

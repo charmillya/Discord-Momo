@@ -29,15 +29,18 @@ class cSetBirthday(commands.Cog):
         elif len(birthday) != 10:
             await inter.response.send_message(f"{inter.user.mention}, the **format** of the birthday you provided is **incorrect**! Please provide a birthday in the following format: **YYYY-MM-DD** (i.e. 2007-07-27)")
         else:
-            cur.execute("UPDATE users SET birthday = ? WHERE userid = ? and guildid = ?", (birthday, inter.user.id, inter.guild.id,))
-            conn.commit()
-            setBdayEmbed = nextcord.Embed()
-            setBdayEmbed.title = "Birthday set! :cake:"
-            setBdayEmbed.colour = nextcord.colour.Color.from_rgb(255, 112, 243)
-            setBdayEmbed.description = f"{inter.user.mention}, your **birthday** has been set to the following date: **{birthday}**!"
-            setBdayEmbed.set_footer(text="If you want to change your birthday, please contact my developer @charmillya!")
-            setBdayEmbed.set_thumbnail(inter.user.avatar.url)
-            await inter.response.send_message(embed=setBdayEmbed)
+            if birthday[4] != "-" or birthday[7] != "-":
+                await inter.response.send_message(f"{inter.user.mention}, the **format** of the birthday you provided is **incorrect**! Please provide a birthday in the following format: **YYYY-MM-DD** (i.e. 2007-07-27)")
+            else:
+                cur.execute("UPDATE users SET birthday = ? WHERE userid = ? and guildid = ?", (birthday, inter.user.id, inter.guild.id,))
+                conn.commit()
+                setBdayEmbed = nextcord.Embed()
+                setBdayEmbed.title = "Birthday set! :cake:"
+                setBdayEmbed.colour = nextcord.colour.Color.from_rgb(255, 112, 243)
+                setBdayEmbed.description = f"{inter.user.mention}, your **birthday** has been set to the following date: **{birthday}**!"
+                setBdayEmbed.set_footer(text="If you want to change your birthday, please contact my developer @charmillya!")
+                setBdayEmbed.set_thumbnail(inter.user.avatar.url)
+                await inter.response.send_message(embed=setBdayEmbed)
 
         
 def setup(bot: commands.Bot):

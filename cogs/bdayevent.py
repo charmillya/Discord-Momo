@@ -13,12 +13,11 @@ class cBdayEvent(commands.Cog):
     @tasks.loop(hours=24)
     async def check_for_birthday(self):
         await self.bot.wait_until_ready()
-        now = datetime.today().strftime('%Y-%m-%d')
-        print(now)
+        now = datetime.today().strftime('%m-%d')
         
         conn = sqlite3.connect('momodb.db')
         cur = conn.cursor()
-        cur.execute("SELECT * from users where birthday = ?", (now,))
+        cur.execute("SELECT * from users where birthday like ?", (('%%%%%' + str(now)),))
         results = cur.fetchall()
         if(results):
             for result in results:
