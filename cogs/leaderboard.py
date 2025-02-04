@@ -10,7 +10,7 @@ class cLeaderboard(commands.Cog):
 
     @nextcord.slash_command(
         name="leaderboard",
-        description="Check the 10 top stylists of our server!",
+        description="Check the 10 top stylists of the server!",
     )   
     async def blings(
         self,
