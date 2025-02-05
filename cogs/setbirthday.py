@@ -44,7 +44,7 @@ class cSetBirthday(commands.Cog):
             conn.commit()
             setBdayEmbed = nextcord.Embed()
             setBdayEmbed.title = "Birthday set! :cake:"
-            setBdayEmbed.colour = nextcord.colour.Color.from_rgb(255, 112, 243)
+            setBdayEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
             setBdayEmbed.description = f"{inter.user.mention}, your **birthday** has been set to the following date: **{birthday}**!"
             setBdayEmbed.set_footer(text="If you want to change your birthday, please contact my developer @charmillya!")
             setBdayEmbed.set_thumbnail(inter.user.avatar.url)

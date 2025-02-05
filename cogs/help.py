@@ -50,9 +50,11 @@ class cHelp(commands.Cog):
         \n
         __**Miscellaneous :bangbang::**__
         **/daily**: Claim your daily random piece of clothing and/or Blings delivery!
+        **/vote**: Upvote me on top.gg to earn free rewards!
         **/8ball**: I answer a question of yours!
         **/bbq**: Feed me some delicious BBQ!
         **/hug**: Hug up to 5 chosen stylists!
+        **/code**: I send you a link to my GitHub code!
 
         '''
         try:

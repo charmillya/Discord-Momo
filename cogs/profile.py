@@ -2,6 +2,7 @@ import nextcord
 import sqlite3
 from nextcord.ext import commands
 from assets.momoemotes import emotes
+from assets.months_days_utility import *
 
 class cProfile(commands.Cog):
 
@@ -51,18 +52,19 @@ class cProfile(commands.Cog):
 
         totalclothes = results[0]
 
+        creationDate = user.created_at.strftime('%Y-%m-%d')
         profileEmbed = nextcord.Embed()
         profileEmbed.title = f"{user.display_name}'s profile!"
         profileEmbed.add_field(name=f"Username", value=user.name, inline=True)
         profileEmbed.add_field(name=f"User ID", value=user.id, inline=True)
-        profileEmbed.add_field(name=f"Account created on", value=user.created_at.strftime('%d-%m-%Y'), inline=True)
+        profileEmbed.add_field(name=f"Account created on", value=f"{GetMonth(creationDate[5:7])} {RemoveZero(creationDate[8:10])}{GetDay(creationDate[8:10])} {creationDate[0:4]}", inline=True)
         profileEmbed.add_field(name=f"Total messages sent", value=xp, inline=True)
         profileEmbed.add_field(name=f"Quantity of clothes owned", value=totalclothes, inline=True)
         profileEmbed.add_field(name=f"Mira Level {emotes["emoteMiraLevel"]}", value=level, inline=True)
         profileEmbed.add_field(name=f"Blings {emotes["emoteBling"]}", value=blings, inline=True)
-        profileEmbed.add_field(name=f"Last daily: Blings {emotes["emoteBling"]}", value=lastdailyblings, inline=True)
-        profileEmbed.add_field(name=f"Last daily: Resonance", value=lastdailypull, inline=True)
-        profileEmbed.add_field(name=f"Birthday :cake:", value=birthday, inline=True)
+        profileEmbed.add_field(name=f"Last daily: Blings {emotes["emoteBling"]}", value=f"{GetMonth(lastdailyblings[5:7])} {RemoveZero(lastdailyblings[8:10])}{GetDay(lastdailyblings[8:10])} {lastdailyblings[0:4]}", inline=True)
+        profileEmbed.add_field(name=f"Last daily: Resonance", value=f"{GetMonth(lastdailypull[5:7])} {RemoveZero(lastdailypull[8:10])}{GetDay(lastdailypull[8:10])} {lastdailypull[0:4]}", inline=True)
+        profileEmbed.add_field(name=f"Birthday :cake:", value=f"{GetMonth(birthday[5:7])} {RemoveZero(birthday[8:10])}{GetDay(birthday[8:10])} {birthday[0:4]}", inline=True)
 
         profileEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
         profileEmbed.set_thumbnail(user.avatar.url)
