@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 from nextcord.ext import commands, tasks
 from assets.momoemotes import emotes
+from assets.months_days_utility import *
 
 class cBdayEvent(commands.Cog):
 
@@ -28,7 +29,9 @@ class cBdayEvent(commands.Cog):
                         channel = self.bot.get_channel(1334659853410369556)
                         bdayEmbed = nextcord.Embed()
                         bdayEmbed.title = f'Happy birthday, {user.display_name}! :birthday:'
-                        bdayEmbed.description = f"Today **{datetime.now().strftime('%m-%d')}**, we're celebrating **{user.name}**'s birthday! **HAPPY BIRTHDAY!!** {emotes['emoteNikkiKiss']}\nAs a **birthday present**, you get **100,000** {emotes['emoteBling']} !!"
+                        date = datetime.now().strftime('%Y-%m-%d')
+                        print(date)
+                        bdayEmbed.description = f"Today **{GetMonth(date[5:7])} {RemoveZero(date[8:10])}{GetDay(date[8:10])}**, we're celebrating **{user.name}**'s birthday! **HAPPY BIRTHDAY!!** {emotes['emoteNikkiKiss']}\nAs a **birthday present**, you get **100,000** {emotes['emoteBling']} !!"
                         bdayEmbed.colour = nextcord.Colour.from_rgb(255, 112, 243)
                         bdayEmbed.set_image(user.display_avatar.url)
                         await channel.send(embed=bdayEmbed)

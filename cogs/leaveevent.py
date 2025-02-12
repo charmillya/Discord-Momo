@@ -14,7 +14,10 @@ class cLeaveEvent(commands.Cog):
             welcomeEmbed = nextcord.Embed()
             welcomeEmbed.title = f'Farewell, stylist {member.display_name}! {emotes["emoteNikkiCry"]}'
             welcomeEmbed.colour = nextcord.colour.Color.from_rgb(255, 187, 69)
-            welcomeEmbed.set_image(member.avatar.url)
+            try:
+                welcomeEmbed.set_image(member.avatar.url)
+            except:
+                pass
             welcomeEmbed.description = f'I hope that we will cross paths again .. {emotes["emoteNikkiCry"]}'
             await channel.send(embed=welcomeEmbed)
 

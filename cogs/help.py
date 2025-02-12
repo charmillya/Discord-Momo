@@ -43,11 +43,6 @@ class cHelp(commands.Cog):
         **/guide**: Display a chosen Nikki guide!
         **/coinflip**: I flip a coin and tell you the result!
         \n
-        __**Games :video_game::**__
-        **/birthdays**: List the 10 upcoming birthdays in the server!
-        **/guide**: Display a chosen Nikki guide!
-        **/bbq**: Feed me some delicious BBQ!
-        \n
         __**Miscellaneous :bangbang::**__
         **/daily**: Claim your daily random piece of clothing and/or Blings delivery!
         **/vote**: Upvote me on top.gg to earn free rewards!

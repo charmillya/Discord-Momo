@@ -32,12 +32,33 @@ async def echo(ctx, *,args):
     else:
         await None
 
-@bot.command(name="test")
-async def SendMessage(ctx):
-    if ctx.message.author.id in [593889874315182133, 505101653536669697]:
-        await ctx.send(ctx.guild.id)
-    else:
-        await None
+@bot.command(name="allservers")
+async def PrintAllServers(ctx):
+    counter = 0
+    for guild in bot.guilds:
+        counter += 1
+        print(guild.name)
+    print("_______________________________________________________________")
+    print(f"TOTAL: {counter} servers")
+    await ctx.send(f"TOTAL: {counter} servers")
+    print("_______________________________________________________________")
+
+@bot.command(name="allmembers")
+async def PrintAllMembers(ctx):
+    counterMembers = 0
+    counterServers = 0
+    for guild in bot.guilds:
+        counterServers += 1
+        print("_______________________________________________________________")
+        print(f"GUILD {guild.name}")
+        print("_______________________________________________________________")
+        for member in guild.members:
+            counterMembers += 1
+            print(member.name)
+    print("_______________________________________________________________")
+    print(f"TOTAL: {counterMembers} members in {counterServers} servers")
+    await ctx.send(f"TOTAL: {counterMembers} members in {counterServers} servers")
+    print("_______________________________________________________________")
 
 @bot.event
 async def on_ready():

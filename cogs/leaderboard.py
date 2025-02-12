@@ -20,6 +20,7 @@ class cLeaderboard(commands.Cog):
             choices={"Mira EXP": 1, "Blings": 2, "Both": 3},
         ),
         ):
+        await inter.response.defer()
         if type == 1:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
@@ -44,7 +45,7 @@ class cLeaderboard(commands.Cog):
                     leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :third_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
                 else:
                     leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name}', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}')
-            await inter.response.send_message(embed=leaderboardEmbed)
+            await inter.followup.send(embed=leaderboardEmbed)
         elif type == 2:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
@@ -69,7 +70,7 @@ class cLeaderboard(commands.Cog):
                     leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :third_place:', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
                 else:
                     leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name}', value=f'**Blings:** {i[1]} {emotes["emoteBling"]}')
-            await inter.response.send_message(embed=leaderboardEmbed)
+            await inter.followup.send(embed=leaderboardEmbed)
         else:
             conn = sqlite3.connect('momodb.db')
             cur = conn.cursor()
@@ -94,7 +95,7 @@ class cLeaderboard(commands.Cog):
                     leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name} :third_place:', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
                 else:
                     leaderboardEmbed.add_field(name=f'Top {counter} - {currUser.display_name}', value=f'**Level:** {i[1]} {emotes["emoteMiraLevel"]}\n**Total Mira EXP:** {i[2]} {emotes["emoteMiraExp"]}\n**Blings:** {i[3]} {emotes["emoteBling"]}')
-            await inter.response.send_message(embed=leaderboardEmbed)
+            await inter.followup.send(embed=leaderboardEmbed)
 
         
 def setup(bot: commands.Bot):
